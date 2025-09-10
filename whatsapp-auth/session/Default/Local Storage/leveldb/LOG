@@ -1,0 +1,20 @@
+2025/09/02-21:05:03.113 20b0 Reusing MANIFEST C:\Users\yadav\Downloads\whatsapp agent\whatsapp-auth\session\Default\Local Storage\leveldb/MANIFEST-000001
+2025/09/02-21:05:03.126 20b0 Recovering log #32
+2025/09/02-21:05:03.138 20b0 Reusing old log C:\Users\yadav\Downloads\whatsapp agent\whatsapp-auth\session\Default\Local Storage\leveldb/000032.log 
+2025/09/02-22:12:57.896 af4 Level-0 table #36: started
+2025/09/02-22:12:57.913 af4 Level-0 table #36: 14407 bytes OK
+2025/09/02-22:12:57.919 af4 Delete type=0 #32
+2025/09/02-22:12:57.924 af4 Compacting 4@0 + 0@1 files
+2025/09/02-22:12:57.936 af4 Generated table #37@0: 103 keys, 9387 bytes
+2025/09/02-22:12:57.936 af4 Compacted 4@0 + 0@1 files => 9387 bytes
+2025/09/02-22:12:57.937 af4 compacted to: files[ 0 1 0 0 0 0 0 ]
+2025/09/02-22:12:57.940 af4 Delete type=2 #3
+2025/09/02-22:12:57.940 af4 Delete type=2 #29
+2025/09/02-22:12:57.940 af4 Delete type=2 #33
+2025/09/02-22:12:57.941 af4 Delete type=2 #36
+2025/09/03-00:35:23.963 af4 Level-0 table #39: started
+2025/09/03-00:35:23.973 af4 Level-0 table #39: 13900 bytes OK
+2025/09/03-00:35:23.977 af4 Delete type=0 #35
+2025/09/03-01:25:27.210 20b0 Level-0 table #41: started
+2025/09/03-01:25:27.217 20b0 Level-0 table #41: 15422 bytes OK
+2025/09/03-01:25:27.218 20b0 Delete type=0 #38

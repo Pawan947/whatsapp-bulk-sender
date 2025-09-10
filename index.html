@@ -1,0 +1,3923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Manager</title>
+    <style>
+        /* CSS Variables */
+        :root {
+            --red-primary: #e53935;
+            --red-dark: #8d1b1b;
+            --red-light: #ef5350;
+            --red-accent: #ff1744;
+            --black-primary: #121212;
+            --black-secondary: #1e1e1e;
+            --black-tertiary: #242424;
+            --gray-dark: #2d2d2d;
+            --gray-medium: #424242;
+            --gray-light: #757575;
+            --white: #ffffff;
+            --white-dim: rgba(255, 255, 255, 0.85);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.15);
+            --border-radius: 8px;
+            --border-radius-sm: 4px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-primary: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-primary);
+        }
+
+        body {
+            background: var(--black-primary);
+            color: var(--white);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Layout */
+        .container {
+            flex: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .side-panel {
+            width: 320px;
+            background: var(--black-tertiary);
+            padding: 24px;
+            margin: 0;
+            border-right: 1px solid var(--gray-dark);
+            height: 100vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            box-shadow: inset -5px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--red-primary), var(--red-dark));
+            padding: 28px;
+            text-align: center;
+            margin-bottom: 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0) 60%);
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+            position: relative;
+            text-transform: uppercase;
+            background: linear-gradient(to right, var(--white) 0%, var(--white-dim) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .header h6 {
+            font-size: 13px;
+            font-weight: 500;
+            opacity: 0.9;
+            position: relative;
+            letter-spacing: 0.5px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: var(--black-tertiary);
+            border-radius: var(--border-radius);
+            padding: 6px;
+            margin-bottom: 24px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 16px;
+            color: var(--white);
+            cursor: pointer;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            opacity: 0.7;
+        }
+
+        .tab-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            background: var(--red-primary);
+            opacity: 1;
+            box-shadow: 0 2px 8px rgba(229, 57, 53, 0.3);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            background: var(--black-tertiary);
+            padding: 28px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            animation: fadeIn 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-column {
+            flex: 1;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            margin: 8px 0;
+            font-weight: 500;
+            color: var(--white-dim);
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            margin: 8px 0 16px;
+            border: 1px solid var(--gray-dark);
+            background: var(--black-primary);
+            color: var(--white);
+            border-radius: var(--border-radius-sm);
+            font-size: 14px;
+            transition: var(--transition);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--red-primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2), inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px 16px;
+            margin: 8px 0;
+            border: none;
+            background: var(--red-primary);
+            color: var(--white);
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(229, 57, 53, 0.3);
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--red-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(229, 57, 53, 0.4);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(229, 57, 53, 0.3);
+        }
+
+        button:disabled {
+            background: var(--gray-medium);
+            cursor: not-allowed;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+            transition: all 0.8s ease;
+        }
+
+        button:hover::after {
+            left: 100%;
+        }
+
+        /* Specific Components */
+        .messages {
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .message {
+            background: var(--black-primary);
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            border-left: 3px solid var(--red-primary);
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .message:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .message strong {
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        #qrDisplay {
+            text-align: center;
+            padding: 28px;
+            background: var(--black-primary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            margin-top: 20px;
+        }
+
+        #qrCanvas {
+            background: var(--white);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            display: inline-block;
+            box-shadow: var(--shadow);
+            min-height: 250px;
+            min-width: 250px;
+            margin-bottom: 20px;
+        }
+
+        #qrCanvas img {
+            width: 220px;
+            height: 220px;
+        }
+
+        #qrStatus {
+            margin-top: 16px;
+            font-style: italic;
+            font-size: 14px;
+            color: var(--white-dim);
+            padding: 10px;
+            border-radius: var(--border-radius-sm);
+            background: var(--black-tertiary);
+            display: inline-block;
+        }
+
+        #sendLog {
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            background: var(--black-primary);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .log-entry {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-dark);
+            font-size: 13px;
+            line-height: 1.5;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-entry:hover {
+            background: var(--black-tertiary);
+        }
+
+        .log-entry.error {
+            color: var(--red-light);
+            border-left: 3px solid var(--red-light);
+            background: rgba(244, 67, 54, 0.1);
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 8px;
+            padding-left: 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--gray-dark);
+            border-radius: 4px;
+            margin-top: 16px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--red-primary), var(--red-accent));
+            width: 0;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                45deg,
+                rgba(255,255,255,0.1) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255,255,255,0.1) 50%,
+                rgba(255,255,255,0.1) 75%,
+                transparent 75%
+            );
+            background-size: 20px 20px;
+            animation: progressStripes 1s linear infinite;
+        }
+
+        @keyframes progressStripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 20px 0; }
+        }
+
+        h2, h3 {
+            margin-bottom: 24px;
+            font-weight: 600;
+            color: var(--white);
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        h2:after, h3:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--red-primary);
+            border-radius: 2px;
+        }
+
+        /* Variation Display */
+        #variationDisplay {
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--gray-dark);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .variation-item {
+            margin: 8px 0;
+            padding: 12px;
+            background: var(--black-primary);
+            border-radius: 4px;
+            border-left: 3px solid var(--red-primary);
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--black-tertiary);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-medium);
+            border-radius: 4px;
+            border: 2px solid var(--black-tertiary);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--red-primary);
+        }
+
+        /* For Firefox */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--gray-medium) var(--black-tertiary);
+        }
+
+        /* Analytics Styles */
+        .analytics-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .analytics-summary {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 16px;
+            justify-content: space-between;
+        }
+
+        .analytics-card {
+            background: var(--gray-dark);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            text-align: center;
+            flex: 1;
+            box-shadow: var(--shadow-subtle);
+            transition: var(--transition);
+            border-top: 3px solid var(--red-primary);
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            font-size: 14px;
+            color: var(--gray-light);
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .card-trend {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .card-trend.positive {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .card-trend.negative {
+            background: rgba(244, 67, 54, 0.1);
+            color: #F44336;
+        }
+
+        .card-trend.neutral {
+            background: rgba(255, 152, 0, 0.1);
+            color: #FF9800;
+        }
+
+        .analytics-controls {
+            grid-column: 1 / -1;
+        }
+
+        .chart-container {
+            grid-column: 1 / -1;
+            background: var(--gray-dark);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding: 20px 0;
+            margin-top: 20px;
+            border-bottom: 1px solid var(--gray-medium);
+            position: relative;
+        }
+
+        .chart-bar {
+            width: 12%;
+            background: linear-gradient(to top, var(--red-primary), var(--red-light));
+            border-radius: 4px 4px 0 0;
+        }
+
+        .peak-times, .message-types {
+            background: var(--gray-dark);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .time-slots {
+            margin-top: 16px;
+        }
+
+        .time-slot {
+            margin-bottom: 12px;
+        }
+
+        .time-label {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .time-bar {
+            height: 24px;
+            background: var(--black-primary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .time-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--red-primary), var(--red-light));
+            display: flex;
+            align-items: center;
+            padding-left: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--white);
+        }
+
+        .pie-chart-container {
+            display: flex;
+            margin-top: 16px;
+            align-items: center;
+        }
+
+        .pie-chart {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--black-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pie-segment {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .pie-segment:nth-child(1) {
+            background: var(--red-primary);
+        }
+
+        .pie-segment:nth-child(2) {
+            background: #4CAF50;
+        }
+
+        .pie-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: var(--gray-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .pie-legend {
+            margin-left: 20px;
+            flex: 1;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .text-color {
+            background: var(--red-primary);
+        }
+
+        .media-color {
+            background: #4CAF50;
+        }
+
+        .other-color {
+            background: #FF9800;
+        }
+
+        .top-messages {
+            grid-column: 1 / -1;
+            background: var(--gray-dark);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .message-list {
+            margin-top: 16px;
+        }
+
+        .top-message {
+            background: var(--black-primary);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--red-primary);
+        }
+
+        .message-preview {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .message-stats {
+            display: flex;
+            font-size: 12px;
+            color: var(--gray-light);
+        }
+
+        .stat-item {
+            margin-right: 16px;
+        }
+
+        h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--white);
+        }
+
+        /* Make analytics responsive */
+        @media (max-width: 768px) {
+            .analytics-container {
+                grid-template-columns: 1fr;
+            }
+
+            .analytics-summary {
+                flex-wrap: wrap;
+            }
+
+            .analytics-card {
+                min-width: 45%;
+                margin-bottom: 16px;
+            }
+        }
+
+        /* Authentication Styles */
+        .auth-status-card {
+            background: var(--black-secondary);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            border-left: 4px solid var(--red-primary);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .auth-status-icon {
+            background: var(--red-primary);
+            color: var(--white);
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(229, 57, 53, 0.25);
+        }
+
+        .auth-status-content {
+            flex: 1;
+        }
+
+        .auth-status-content h4 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .auth-status-content p {
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: var(--white-dim);
+        }
+
+        .expiry-progress {
+            height: 6px;
+            background: var(--gray-dark);
+            border-radius: 3px;
+            margin: 12px 0;
+            overflow: hidden;
+        }
+
+        .expiry-progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--red-primary), var(--red-accent));
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .otp-attempts {
+            font-size: 13px;
+            color: var(--white-dim);
+            margin-top: -8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #attemptsRemaining {
+            font-weight: 600;
+            color: var(--red-primary);
+        }
+
+        #authStatus {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: var(--border-radius-sm);
+            font-size: 13px;
+        }
+
+        #authStatus.error {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--red-light);
+            border-left: 3px solid var(--red-light);
+        }
+
+        #authStatus.success {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+            border-left: 3px solid #4CAF50;
+        }
+
+        /* Chat Interface Styles */
+        .chat-container {
+            display: flex;
+            height: 70vh;
+            background: var(--black-tertiary);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .chat-sidebar {
+            width: 280px;
+            background: var(--black-secondary);
+            border-right: 1px solid var(--gray-dark);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-sidebar h4 {
+            padding: 16px;
+            margin: 0;
+            border-bottom: 1px solid var(--gray-dark);
+        }
+
+        .search-wrapper {
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--gray-dark);
+        }
+
+        .chat-list {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .chat-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-dark);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .chat-item:hover {
+            background: var(--gray-dark);
+        }
+
+        .chat-item.active {
+            background: var(--gray-medium);
+            border-left: 3px solid var(--red-primary);
+        }
+
+        .chat-item-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .chat-item-last {
+            font-size: 12px;
+            color: var(--gray-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-item-unread {
+            background: var(--red-primary);
+            color: var(--white);
+            border-radius: 50%;
+            min-width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            float: right;
+        }
+
+        .chat-item.agent-active {
+            position: relative;
+        }
+
+        .chat-item.agent-active::after {
+            content: '🤖';
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            font-size: 12px;
+        }
+
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gray-medium);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover {
+            background: var(--red-primary);
+        }
+
+        .message-container {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: var(--black-primary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .empty-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--gray-light);
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-bottom: 8px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message-outgoing {
+            background: var(--red-primary);
+            color: var(--white);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-incoming {
+            background: var(--gray-dark);
+            color: var(--white);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 4px;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+
+        .message-read-status {
+            display: inline-block;
+            margin-left: 4px;
+        }
+
+        .message-read-status.sent {
+            color: var(--gray-light);
+        }
+
+        .message-read-status.delivered {
+            color: var(--gray-light);
+        }
+
+        .message-read-status.read {
+            color: var(--blue-light, #4fc3f7);
+        }
+
+        .chat-input-area {
+            padding: 12px 16px;
+            border-top: 1px solid var(--gray-dark);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-input-area textarea {
+            flex: 1;
+            height: 24px;
+            max-height: 120px;
+            padding: 12px;
+            border-radius: 20px;
+            resize: none;
+            background: var(--black-primary);
+            border: 1px solid var(--gray-dark);
+        }
+
+        .attachment-btn {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--gray-medium);
+            transition: var(--transition);
+        }
+
+        .attachment-btn:hover {
+            background: var(--red-primary);
+        }
+
+        #sendChatBtn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position:fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow: auto;
+            
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--black-tertiary);
+            margin: 5% auto;
+            width: 90%;
+            max-width: 600px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-dark);
+            position: relative;
+        }
+
+        .modal-header h4 {
+            margin: 0;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 16px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 16px;
+            border-top: 1px solid var(--gray-dark);
+            text-align: right;
+        }
+
+        h5 {
+            margin: 16px 0 8px;
+            font-size: 15px;
+            color: var(--white);
+        }
+
+        .checkbox-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .checkbox-row label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .message-date-header {
+            text-align: center;
+            padding: 8px;
+            margin: 8px 0;
+            font-size: 12px;
+            color: var(--gray-light);
+            background: var(--black-secondary);
+            border-radius: var(--border-radius-sm);
+        }
+        
+        .message-sending {
+            opacity: 0.7;
+        }
+        
+        .message-error {
+            border: 1px solid var(--red-light);
+        }
+        .side-panel{
+            margin-left: 0px;
+            margin-right: 0px;
+             opacity: 0.9;
+        }
+        
+        .message-time .agent-indicator {
+            margin-left: 4px;
+            font-size: 10px;
+        }
+
+        .config-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--gray-dark);
+            margin-bottom: 16px;
+        }
+
+        .config-tab-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--gray-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .config-tab-btn:hover {
+            color: var(--white);
+        }
+
+        .config-tab-btn.active {
+            color: var(--red-primary);
+            border-bottom-color: var(--red-primary);
+        }
+
+        .config-tab-content {
+            display: none;
+        }
+
+        .config-tab-content.active {
+            display: block;
+        }
+
+        .form-hint {
+            font-size: 11px;
+            color: var(--gray-light);
+            margin-top: 4px;
+        }
+
+        textarea {
+            width: 100%;
+            background: var(--black-primary);
+            border: 1px solid var(--gray-dark);
+            color: var(--white);
+            border-radius: var(--border-radius-sm);
+            font-family: inherit;
+            padding: 8px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <!-- Side Panel for Logs -->
+    <aside class="side-panel">
+        <h2>Activity Log</h2>
+        <div id="sendLog"></div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="container">
+        <header class="header">
+            <h1>WhatsApp Manager</h1>
+            <h6>Developed by inst:pawan_.387</h6>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="auth">Auth</button>
+            <button class="tab-btn" data-tab="qr">QR Code</button>
+            <button class="tab-btn" data-tab="send">Send</button>
+            <button class="tab-btn" data-tab="bulk">Bulk</button>
+            <button class="tab-btn" data-tab="messages">Messages</button>
+            <button class="tab-btn" data-tab="analytics">Analytics</button>
+            <button class="tab-btn" data-tab="chat">Chat</button>
+            <button class="tab-btn" data-tab="gemini">LLM</button>
+            <button class="tab-btn" data-tab="settings">Settings</button>
+            
+        </nav>
+
+        <!-- Tab Contents -->
+        <section id="auth" class="tab-content active">
+            <h3>Authentication</h3>
+            <div id="authStatusCard" style="display: none;" class="auth-status-card">
+                <div class="auth-status-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V4l-8-2-8 2v8c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <div class="auth-status-content">
+                    <h4>Registration Status</h4>
+                    <p id="expiryPeriod">Your registration is valid until: <span id="expiryDate">Not available</span></p>
+                    <div class="expiry-progress">
+                        <div id="expiryProgressBar" class="expiry-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <p id="daysRemaining">0 days remaining</p>
+                </div>
+            </div>
+            <div id="loginForm" class="form-group">
+                <div class="form-row">
+                    <div class="form-column">
+                        <input type="number" id="daysInput" placeholder="Enter number of days for access" min="1" required>
+                        <button id="registerBtn">Register Device</button>
+                    </div>
+                    <div class="form-column">
+                        <input type="text" id="otpInput" placeholder="Enter OTP" required>
+                        <div class="otp-attempts">
+                            <span>Attempts remaining: </span>
+                            <span id="attemptsRemaining">3</span>
+                        </div>
+                        <button id="verifyBtn">Verify OTP</button>
+                    </div>
+                </div>
+                <p id="authStatus"></p>
+            </div>
+        </section>
+
+        <section id="qr" class="tab-content">
+            <h3>QR Code Scanner</h3>
+            <p id="qrStatus">Initializing...</p>
+            <div id="qrDisplay">
+                
+                <div id="qrCanvas"></div>
+                
+            </div>
+            
+        </section>
+
+        <section id="send" class="tab-content">
+            <h3>Send Individual Message</h3>
+            <div class="form-group">
+                <input type="text" id="number" placeholder="Phone Number (e.g., 123456789012)" required>
+                <textarea id="message" placeholder="Enter your message" required></textarea>
+                <div class="form-row">
+                    <div class="form-column">
+                        <input type="file" id="attachment">
+                    </div>
+                    <div class="form-column">
+                        <button id="sendBtn">Send Message</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="messages" class="tab-content">
+            <h3>Recent Messages</h3>
+            <div class="messages" id="messageList"></div>
+        </section>
+
+        <section id="bulk" class="tab-content">
+            <h3>Bulk Message Sender</h3>
+            <div class="form-group">
+                <textarea id="numbers" placeholder="Numbers (one per line, e.g., 123456789012)" required></textarea>
+                
+                <div class="form-row">
+                    <div class="form-column">
+                        <select id="promptSelect"></select>
+                    </div>
+                    <div class="form-column">
+                        <select id="bulkType">
+                            <option value="text">Text Message</option>
+                            <option value="poll">Poll</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <textarea id="bulkMessage" placeholder="Enter your message (use {var1,var2} for variations)" required></textarea>
+                <textarea id="pollOptions" placeholder="Poll options (one per line)" style="display: none;"></textarea>
+                
+                <div class="form-row">
+                    <div class="form-column">
+                        <button id="generateVariationsBtn">Generate Variations</button>
+                    </div>
+                    <div class="form-column">
+                        <button id="generateDullBtn">Generate Dull Text</button>
+                    </div>
+                </div>
+                
+                <div id="variationDisplay"></div>
+                <button id="confirmVariationsBtn" style="display: none;">Confirm Variations</button>
+                
+                <div class="form-row">
+                    <div class="form-column">
+                        <input type="file" id="bulkAttachment">
+                    </div>
+                    <div class="form-column">
+                        <label><input type="checkbox" id="resume"> Resume from last pause</label>
+                    </div>
+                </div>
+                
+                <button id="sendBulkBtn">Start Bulk Send</button>
+                <button id="pauseBulkBtn" style="display: none;">Pause Sending</button>
+                
+                <div class="progress-bar">
+                    <div id="bulkProgress" class="progress-fill"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="analytics" class="tab-content">
+            <h3>Message Analytics</h3>
+            <div class="analytics-container">
+                <!-- Analytics Summary Cards -->
+                <div class="analytics-summary">
+                    <div class="analytics-card">
+                        <div class="card-header">Total Sent</div>
+                        <div class="card-value" id="totalSent">--</div>
+                        <div class="card-trend positive">+5.2% ↑</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="card-header">Total Received</div>
+                        <div class="card-value" id="totalReceived">--</div>
+                        <div class="card-trend positive">+3.8% ↑</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="card-header">Seen Rate</div>
+                        <div class="card-value" id="seenRate">--</div>
+                        <div class="card-trend negative">-1.2% ↓</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="card-header">Avg. Response Time</div>
+                        <div class="card-value" id="avgResponseTime">--</div>
+                        <div class="card-trend neutral">0% ↔</div>
+                    </div>
+                </div>
+
+                <!-- Time Period Selector -->
+                <div class="analytics-controls">
+                    <div class="form-row">
+                        <div class="form-column">
+                            <select id="timeRange">
+                                <option value="today">Today</option>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="week" selected>Last 7 days</option>
+                                <option value="month">Last 30 days</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
+                        </div>
+                        <div class="form-column">
+                            <button id="refreshAnalytics">Refresh Data</button>
+                        </div>
+                    </div>
+                    <div class="form-row" id="customDateRange" style="display: none;">
+                        <div class="form-column">
+                            <input type="date" id="startDate">
+                        </div>
+                        <div class="form-column">
+                            <input type="date" id="endDate">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Engagement Chart -->
+                <div class="chart-container">
+                    <h4>Engagement Over Time</h4>
+                    <div class="chart" id="engagementChart">
+                        <div class="chart-placeholder">
+                            <div class="chart-bar" style="height: 30%;"></div>
+                            <div class="chart-bar" style="height: 45%;"></div>
+                            <div class="chart-bar" style="height: 60%;"></div>
+                            <div class="chart-bar" style="height: 75%;"></div>
+                            <div class="chart-bar" style="height: 55%;"></div>
+                            <div class="chart-bar" style="height: 80%;"></div>
+                            <div class="chart-bar" style="height: 65%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Peak Times -->
+                <div class="peak-times">
+                    <h4>Peak Engagement Times</h4>
+                    <div class="time-slots">
+                        <div class="time-slot">
+                            <div class="time-label">8AM - 10AM</div>
+                            <div class="time-bar">
+                                <div class="time-fill" style="width: 45%;">45%</div>
+                            </div>
+                        </div>
+                        <div class="time-slot">
+                            <div class="time-label">10AM - 12PM</div>
+                            <div class="time-bar">
+                                <div class="time-fill" style="width: 60%;">60%</div>
+                            </div>
+                        </div>
+                        <div class="time-slot">
+                            <div class="time-label">12PM - 2PM</div>
+                            <div class="time-bar">
+                                <div class="time-fill" style="width: 30%;">30%</div>
+                            </div>
+                        </div>
+                        <div class="time-slot">
+                            <div class="time-label">2PM - 4PM</div>
+                            <div class="time-bar">
+                                <div class="time-fill" style="width: 50%;">50%</div>
+                            </div>
+                        </div>
+                        <div class="time-slot">
+                            <div class="time-label">4PM - 6PM</div>
+                            <div class="time-bar">
+                                <div class="time-fill" style="width: 85%;">85%</div>
+                            </div>
+                        </div>
+                        <div class="time-slot">
+                            <div class="time-label">6PM - 8PM</div>
+                            <div class="time-bar">
+                                <div class="time-fill" style="width: 75%;">75%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Message Type Breakdown -->
+                <div class="message-types">
+                    <h4>Message Type Breakdown</h4>
+                    <div class="pie-chart-container">
+                        <div class="pie-chart">
+                            <div class="pie-segment" style="transform: rotate(0deg); clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%);">
+                            </div>
+                            <div class="pie-segment" style="transform: rotate(180deg); clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 50%, 50% 50%);">
+                            </div>
+                            <div class="pie-center">65%</div>
+                        </div>
+                        <div class="pie-legend">
+                            <div class="legend-item">
+                                <div class="legend-color text-color"></div>
+                                <div class="legend-label">Text (65%)</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color media-color"></div>
+                                <div class="legend-label">Media (25%)</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color other-color"></div>
+                                <div class="legend-label">Other (10%)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Performing Messages -->
+                <div class="top-messages">
+                    <h4>Top Performing Messages</h4>
+                    <div class="message-list" id="topMessages">
+                        <div class="top-message">
+                            <div class="message-preview">"Get 25% off on your next purchase with code SUMMER25..."</div>
+                            <div class="message-stats">
+                                <div class="stat-item">Seen: 95%</div>
+                                <div class="stat-item">Replies: 42</div>
+                            </div>
+                        </div>
+                        <div class="top-message">
+                            <div class="message-preview">"Introducing our new collection of summer essentials..."</div>
+                            <div class="message-stats">
+                                <div class="stat-item">Seen: 88%</div>
+                                <div class="stat-item">Replies: 36</div>
+                            </div>
+                        </div>
+                        <div class="top-message">
+                            <div class="message-preview">"Last chance to grab our special offer ending tonight..."</div>
+                            <div class="message-stats">
+                                <div class="stat-item">Seen: 92%</div>
+                                <div class="stat-item">Replies: 28</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="gemini" class="tab-content">
+            <h3>AI Content Generator</h3>
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="form-column">
+                        <input type="text" id="companyName" placeholder="Company Name (e.g., UrbanFit Apparel)" required>
+                    </div>
+                    <div class="form-column">
+                        <input type="text" id="productDetails" placeholder="Product Details (e.g., Premium skirts)" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-column">
+                        <select id="targetGender">
+                            <option value="female">Female</option>
+                            <option value="male">Male</option>
+                            <option value="unisex">Unisex</option>
+                        </select>
+                    </div>
+                    <div class="form-column">
+                        <input type="text" id="targetAudience" placeholder="Target Audience (e.g., Active women aged 18-35)" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-column">
+                        <input type="text" id="tone" placeholder="Tone (e.g., empowering)" required>
+                    </div>
+                    <div class="form-column">
+                        <input type="text" id="keySellingPoints" placeholder="Key Selling Points (e.g., 4-way stretch)" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-column">
+                        <input type="text" id="callToAction" placeholder="Call to Action (e.g., Get 25% OFF)" required>
+                    </div>
+                    <div class="form-column">
+                        <input type="text" id="currentPromotion" placeholder="Current Promotion (e.g., New Collection)" required>
+                    </div>
+                </div>
+                
+                <button id="generateMarketingBtn">Generate Marketing Post</button>
+                <textarea id="geminiResponse" placeholder="Generated post will appear here" readonly></textarea>
+                
+                <div class="form-row">
+                    <div class="form-column">
+                        <button id="savePromptBtn">Save Prompt</button>
+                    </div>
+                    <div class="form-column">
+                        <select id="promptSelectGemini"></select>
+                        <button id="generateBtn">Generate Response</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="settings" class="tab-content">
+            <h3>System Settings</h3>
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="form-column">
+                        <label>Daily Message Limit: 
+                            <input type="number" id="dailyLimit" value="500" min="1" required>
+                        </label>
+                    </div>
+                    <div class="form-column">
+                        <label>Batch Size (50-100): 
+                            <input type="number" id="batchSize" value="50" min="50" max="100" required>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-column">
+                        <label>Batch Gap (hours): 
+                            <input type="number" id="batchGap" value="1" min="1" max="2" step="0.5" required>
+                        </label>
+                    </div>
+                    <div class="form-column">
+                        <label>Min Message Delay (seconds): 
+                            <input type="number" id="minMessageDelay" value="30" min="30" max="120" required>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-column">
+                        <label>Max Message Delay (seconds): 
+                            <input type="number" id="maxMessageDelay" value="120" min="30" max="120" required>
+                        </label>
+                    </div>
+                    <div class="form-column">
+                        <label>Non-Peak Start (hour, 0-23): 
+                            <input type="number" id="nonPeakStart" value="2" min="0" max="23" required>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-column">
+                        <label>Non-Peak End (hour, 0-23): 
+                            <input type="number" id="nonPeakEnd" value="5" min="0" max="23" required>
+                        </label>
+                    </div>
+                    <div class="form-column">
+                        <button id="saveSettingsBtn">Save Settings</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="chat" class="tab-content">
+            <h3>Chat Interface</h3>
+            
+            <div class="chat-container">
+                <div class="chat-sidebar">
+                    <h4>Contacts</h4>
+                    <div class="search-wrapper">
+                        <input type="text" id="chatSearch" placeholder="Search contacts...">
+                    </div>
+                    <div id="chatList" class="chat-list">
+                        <!-- Chat contacts will be populated here -->
+                    </div>
+                </div>
+                
+                <div class="chat-main">
+                    <div class="chat-header">
+                        <div id="selectedChatInfo">
+                            <h4>Select a chat</h4>
+                        </div>
+                        <div class="chat-actions">
+                            <button id="startAgentBtn" class="icon-btn" title="Start AI Agent">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                            </button>
+                            <button id="stopAgentBtn" class="icon-btn" title="Stop AI Agent" style="display: none;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><rect x="9" y="9" width="6" height="6"></rect></svg>
+                            </button>
+                            <button id="configureAgentBtn" class="icon-btn" title="Configure AI Agent">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="messageContainer" class="message-container">
+                        <div class="empty-state">
+                            <p>Select a chat to start messaging</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-area">
+                        <textarea id="chatMessage" placeholder="Type a message..." disabled></textarea>
+                        <label for="chatAttachment" class="attachment-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                        </label>
+                        <input type="file" id="chatAttachment" style="display: none;">
+                        <button id="sendChatBtn" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Agent Configuration Modal -->
+            <div id="agentConfigModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4>Configure AI Agent</h4>
+                        <span class="modal-close">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <!-- Basic behavior tab links -->
+                            <div class="config-tabs">
+                                <button class="config-tab-btn active" data-tab="basic">Basic Behavior</button>
+                                <button class="config-tab-btn" data-tab="product">Product Details</button>
+                                <button class="config-tab-btn" data-tab="conversation">Conversation</button>
+                                <button class="config-tab-btn" data-tab="advanced">Advanced</button>
+                            </div>
+                            
+                            <!-- Basic behavior tab -->
+                            <div id="basic-tab" class="config-tab-content active">
+                                <h5>Agent Behavior</h5>
+                                <div class="form-row">
+                                    <div class="form-column">
+                                        <label>Personality
+                                            <select id="agentPersonality">
+                                                <option value="professional">Professional</option>
+                                                <option value="casual">Casual</option>
+                                                <option value="friendly">Friendly</option>
+                                                <option value="sales">Sales Representative</option>
+                                                <option value="support">Customer Support</option>
+                                                <option value="marketing">Marketing</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                    <div class="form-column">
+                                        <label>Gender
+                                            <select id="agentGender">
+                                                <option value="neutral">Neutral</option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <label>Age Range</label>
+                                <div class="form-row">
+                                    <div class="form-column">
+                                        <label>Min Age
+                                            <input type="number" id="ageMin" min="18" max="80" value="25">
+                                        </label>
+                                    </div>
+                                    <div class="form-column">
+                                        <label>Max Age
+                                            <input type="number" id="ageMax" min="18" max="80" value="35">
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <h5>Response Settings</h5>
+                                <div class="form-row">
+                                    <div class="form-column">
+                                        <label>Response Delay (seconds)
+                                            <div class="form-row">
+                                                <div class="form-column">
+                                                    <label>Min
+                                                        <input type="number" id="delayMin" min="0" max="10" value="2">
+                                                    </label>
+                                                </div>
+                                                <div class="form-column">
+                                                    <label>Max
+                                                        <input type="number" id="delayMax" min="1" max="15" value="5">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="form-column">
+                                        <label>Max Length (chars)
+                                            <input type="number" id="responseLength" min="50" max="300" value="150">
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <label>Greeting Message
+                                    <input type="text" id="greeting" value="Hello! How can I assist you today?">
+                                </label>
+                                
+                                <h5>Working Hours</h5>
+                                <div class="form-row">
+                                    <div class="form-column">
+                                        <label>Start Hour (0-23)
+                                            <input type="number" id="workStart" min="0" max="23" value="9">
+                                        </label>
+                                    </div>
+                                    <div class="form-column">
+                                        <label>End Hour (0-23)
+                                            <input type="number" id="workEnd" min="0" max="23" value="21">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Product Details tab -->
+                            <div id="product-tab" class="config-tab-content">
+                                <h5>Business Role</h5>
+                                <div class="form-row">
+                                    <div class="form-column">
+                                        <label>Role
+                                            <select id="businessRole">
+                                                <option value="general">General</option>
+                                                <option value="sales">Sales</option>
+                                                <option value="support">Customer Support</option>
+                                                <option value="marketing">Marketing</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                    <div class="form-column">
+                                        <label>Lead Qualification
+                                            <select id="leadQualification">
+                                                <option value="none">None</option>
+                                                <option value="basic">Basic</option>
+                                                <option value="aggressive">Aggressive</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <h5>Company & Product Info</h5>
+                                <div class="form-row">
+                                    <div class="form-column">
+                                        <label>Company Name
+                                            <input type="text" id="companyName" placeholder="Your company name">
+                                        </label>
+                                    </div>
+                                    <div class="form-column">
+                                        <label>Product Name
+                                            <input type="text" id="productName" placeholder="Product name">
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <label>Product Description
+                                    <textarea id="productDescription" placeholder="Describe your product" rows="2"></textarea>
+                                </label>
+                                
+                                <div class="form-row">
+                                    <div class="form-column">
+                                        <label>Price
+                                            <input type="text" id="productPrice" placeholder="e.g. $99.99">
+                                        </label>
+                                    </div>
+                                    <div class="form-column">
+                                        <label>Availability
+                                            <select id="productAvailability">
+                                                <option value="in stock">In Stock</option>
+                                                <option value="limited stock">Limited Stock</option>
+                                                <option value="pre-order">Pre-Order</option>
+                                                <option value="back-ordered">Back-Ordered</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <label>Key Features (comma separated)
+                                    <input type="text" id="productFeatures" placeholder="Feature 1, Feature 2, etc.">
+                                </label>
+                                
+                                <label>Benefits (comma separated)
+                                    <input type="text" id="productBenefits" placeholder="Benefit 1, Benefit 2, etc.">
+                                </label>
+                                
+                                <div class="form-row">
+                                    <div class="form-column">
+                                        <label>Warranty
+                                            <input type="text" id="productWarranty" placeholder="e.g. 1-year warranty">
+                                        </label>
+                                    </div>
+                                    <div class="form-column">
+                                        <label>Return Policy
+                                            <input type="text" id="productReturnPolicy" placeholder="e.g. 30-day returns">
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <label>Delivery Information
+                                    <input type="text" id="productDeliveryInfo" placeholder="e.g. Free shipping in 1-3 days">
+                                </label>
+                            </div>
+                            
+                            <!-- Conversation tab -->
+                            <div id="conversation-tab" class="config-tab-content">
+                                <h5>Conversation Rules</h5>
+                                <label>
+                                    <textarea id="conversationRules" placeholder="Enter conversation rules, one per line" rows="4"></textarea>
+                                </label>
+                                <p class="form-hint">Example: "Always ask for customer's needs before suggesting products", "Avoid mentioning competitors"</p>
+                                
+                                <h5>Custom Prompts</h5>
+                                <label>Introduction Approach
+                                    <input type="text" id="customPromptIntro" placeholder="How agent should start conversations">
+                                </label>
+                                
+                                <label>Product Presentation
+                                    <input type="text" id="customPromptPresentation" placeholder="How agent should present product features">
+                                </label>
+                                
+                                <label>Objection Handling
+                                    <input type="text" id="customPromptObjections" placeholder="How agent should handle objections">
+                                </label>
+                                
+                                <label>Closing Approach
+                                    <input type="text" id="customPromptClosing" placeholder="How agent should close sales">
+                                </label>
+                                
+                                <label>Follow-Up Strategy
+                                    <select id="followupStrategy">
+                                        <option value="none">No automatic follow-up</option>
+                                        <option value="gentle">Gentle reminder</option>
+                                        <option value="moderate">Moderate persistence</option>
+                                        <option value="aggressive">High persistence</option>
+                                    </select>
+                                </label>
+                                
+                                <h5>Custom Agent Prompt (Advanced)</h5>
+                                <label>
+                                    <textarea id="customPrompt" placeholder="Custom prompt template for the AI. Use {persona}, {conversation}, {message}, {maxLength} as placeholders." rows="4"></textarea>
+                                </label>
+                            </div>
+                            
+                            <!-- Advanced tab -->
+                            <div id="advanced-tab" class="config-tab-content">
+                                <h5>Auto-Response Settings</h5>
+                                <div class="form-row">
+                                    <div class="form-column">
+                                        <label>Response Rate (%)
+                                            <input type="number" id="responseRate" min="1" max="100" value="80">
+                                        </label>
+                                    </div>
+                                    <div class="form-column">
+                                        <label>Mode
+                                            <select id="agentMode">
+                                                <option value="auto">Auto (All Chats)</option>
+                                                <option value="selective">Selective Chats</option>
+                                                <option value="manual">Manual Only</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="checkbox-row">
+                                    <label><input type="checkbox" id="respondKnown" checked> Respond to known users</label>
+                                    <label><input type="checkbox" id="respondUnknown"> Respond to unknown users</label>
+                                    <label><input type="checkbox" id="respondGroups"> Respond in groups</label>
+                                    <label><input type="checkbox" id="alwaysReplyInActiveChats" checked> Always reply in active chats</label>
+                                </div>
+                                
+                                <h5>Conversation Memory</h5>
+                                <div class="form-row">
+                                    <div class="form-column">
+                                        <label>History context size
+                                            <input type="number" id="conversationMemory" min="5" max="50" value="20">
+                                        </label>
+                                    </div>
+                                    <div class="form-column">
+                                        <label>Max consecutive replies
+                                            <input type="number" id="maxConsecutiveResponses" min="1" max="20" value="10">
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <label>Min response interval (seconds)
+                                    <input type="number" id="minResponseInterval" min="0" max="10" step="0.1" value="0.5">
+                                </label>
+                                
+                                <h5>Blacklist</h5>
+                                <label>Blacklisted Words (comma separated)
+                                    <input type="text" id="blacklistWords" value="spam, scam, hack">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="saveAgentConfig">Save Configuration</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- External Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
+    <script>
+        // Wait for DOM to fully load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for Electron API availability
+            if (!window.electronAPI) {
+                console.error('Electron API not available. Verify preload.js and main.js configuration.');
+                document.getElementById('authStatus').textContent = 'Error: Electron API not loaded';
+                document.getElementById('authStatus').className = 'error';
+                return;
+            }
+
+            // Initialize Socket.IO
+            const socket = io('http://localhost:3000');
+
+            // DOM Elements
+            const elements = {
+                tabs: document.querySelectorAll('.tab-btn'),
+                contents: document.querySelectorAll('.tab-content'),
+                qrCanvas: document.getElementById('qrCanvas'),
+                qrStatus: document.getElementById('qrStatus'),
+                sendLog: document.getElementById('sendLog'),
+                sendBulkBtn: document.getElementById('sendBulkBtn'),
+                pauseBulkBtn: document.getElementById('pauseBulkBtn'),
+                authStatus: document.getElementById('authStatus'),
+                authStatusCard: document.getElementById('authStatusCard'),
+                loginForm: document.getElementById('loginForm'),
+                expiryDate: document.getElementById('expiryDate'),
+                expiryProgressBar: document.getElementById('expiryProgressBar'),
+                daysRemaining: document.getElementById('daysRemaining'),
+                attemptsRemaining: document.getElementById('attemptsRemaining'),
+                messageList: document.getElementById('messageList'),
+                variationDisplay: document.getElementById('variationDisplay'),
+                confirmVariationsBtn: document.getElementById('confirmVariationsBtn'),
+                // Add analytics elements
+                totalSent: document.getElementById('totalSent'),
+                totalReceived: document.getElementById('totalReceived'),
+                seenRate: document.getElementById('seenRate'),
+                avgResponseTime: document.getElementById('avgResponseTime'),
+                timeRange: document.getElementById('timeRange'),
+                startDate: document.getElementById('startDate'),
+                endDate: document.getElementById('endDate'),
+                customDateRange: document.getElementById('customDateRange'),
+                refreshAnalytics: document.getElementById('refreshAnalytics'),
+                engagementChart: document.getElementById('engagementChart'),
+                topMessages: document.getElementById('topMessages')
+            };
+
+            // State Management
+            let state = {
+                isSending: false,
+                geminiResponse: '',
+                messages: [],
+                pollVotes: {},
+                settings: JSON.parse(localStorage.getItem('bulkSettings')) || {
+                    dailyLimit: 500,
+                    batchSize: 50,
+                    batchGap: 1,
+                    minMessageDelay: 30,
+                    maxMessageDelay: 120,
+                    nonPeakStart: 2,
+                    nonPeakEnd: 5
+                },
+                isAuthenticated: false,
+                token: localStorage.getItem('sessionToken') || null,
+                textVariations: [], // Store the 4 variations
+                analytics: null, // Store analytics data
+                selectedTimeRange: 'week', // Default time range
+                otpAttempts: 3, // Track OTP attempts
+                registrationData: JSON.parse(localStorage.getItem('registrationData')) || null
+            };
+
+            // Utility Functions
+            const updateTabVisibility = () => {
+                elements.tabs.forEach(tab => {
+                    tab.style.display = (tab.dataset.tab === 'auth' || state.isAuthenticated) ? 'block' : 'none';
+                });
+                if (!state.isAuthenticated) {
+                    elements.tabs.forEach(t => t.classList.remove('active'));
+                    elements.contents.forEach(c => c.classList.remove('active'));
+                    document.querySelector('.tab-btn[data-tab="auth"]').classList.add('active');
+                    document.getElementById('auth').classList.add('active');
+                }
+            };
+
+            const updateAuthDisplay = () => {
+                if (state.registrationData && state.registrationData.expiryDate) {
+                    elements.authStatusCard.style.display = 'flex';
+                    elements.loginForm.style.display = state.isAuthenticated ? 'none' : 'block';
+                    
+                    const expiryDate = new Date(state.registrationData.expiryDate);
+                    const now = new Date();
+                    const totalDays = Math.ceil((state.registrationData.expiryDate - state.registrationData.registrationDate) / (1000 * 60 * 60 * 24));
+                    const remainingDays = Math.max(0, Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24)));
+                    const percentRemaining = Math.min(100, Math.max(0, (remainingDays / totalDays) * 100));
+                    
+                    elements.expiryDate.textContent = expiryDate.toLocaleDateString();
+                    elements.expiryProgressBar.style.width = `${percentRemaining}%`;
+                    elements.daysRemaining.textContent = `${remainingDays} days remaining`;
+                    
+                    // If expired, show message
+                    if (remainingDays <= 0) {
+                        elements.daysRemaining.textContent = 'Your registration has expired';
+                        elements.daysRemaining.style.color = 'var(--red-light)';
+                        elements.authStatusCard.style.borderLeft = '4px solid var(--red-light)';
+                        state.isAuthenticated = false;
+                        state.token = null;
+                        localStorage.removeItem('sessionToken');
+                        updateTabVisibility();
+                    }
+                } else {
+                    elements.authStatusCard.style.display = 'none';
+                    elements.loginForm.style.display = 'block';
+                }
+            };
+
+            const generateQrCodeUrl = (qrData) => {
+                if (!qrData) {
+                    console.error('No QR code data provided');
+                    elements.qrStatus.textContent = 'Error: No QR code data received';
+                    return null;
+                }
+                return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData)}`;
+            };
+
+            const displayQrCode = (qrData) => {
+                const qrCodeUrl = generateQrCodeUrl(qrData);
+                if (!qrCodeUrl) return;
+                elements.qrCanvas.innerHTML = `<img src="${qrCodeUrl}" alt="QR Code" width="200" height="200">`;
+            };
+
+            const loadSettings = async () => {
+                try {
+                    // Get settings from server if authenticated
+                    if (state.isAuthenticated) {
+                        const response = await window.electronAPI.getSettings(state.token);
+                        if (response.success) {
+                            state.settings = response.settings;
+                        } else {
+                            console.error('Failed to load settings:', response.message);
+                        }
+                    }
+
+                    // Update form inputs with current settings
+                document.getElementById('dailyLimit').value = state.settings.dailyLimit;
+                document.getElementById('batchSize').value = state.settings.batchSize;
+                document.getElementById('batchGap').value = state.settings.batchGap;
+                document.getElementById('minMessageDelay').value = state.settings.minMessageDelay;
+                document.getElementById('maxMessageDelay').value = state.settings.maxMessageDelay;
+                document.getElementById('nonPeakStart').value = state.settings.nonPeakStart;
+                document.getElementById('nonPeakEnd').value = state.settings.nonPeakEnd;
+
+                    // Add validation listeners
+                    setupSettingsValidation();
+
+                    // Listen for settings updates from main process
+                    window.electronAPI.onSettingsUpdate((event, newSettings) => {
+                        state.settings = newSettings;
+                        updateSettingsDisplay(newSettings);
+                    });
+
+                } catch (error) {
+                    console.error('Error loading settings:', error);
+                }
+            };
+
+            const updateSettingsDisplay = (newSettings) => {
+                document.getElementById('dailyLimit').value = newSettings.dailyLimit;
+                document.getElementById('batchSize').value = newSettings.batchSize;
+                document.getElementById('batchGap').value = newSettings.batchGap;
+                document.getElementById('minMessageDelay').value = newSettings.minMessageDelay;
+                document.getElementById('maxMessageDelay').value = newSettings.maxMessageDelay;
+                document.getElementById('nonPeakStart').value = newSettings.nonPeakStart;
+                document.getElementById('nonPeakEnd').value = newSettings.nonPeakEnd;
+            };
+
+            const setupSettingsValidation = () => {
+                const dailyLimit = document.getElementById('dailyLimit');
+                const batchSize = document.getElementById('batchSize');
+                const batchGap = document.getElementById('batchGap');
+                const minDelay = document.getElementById('minMessageDelay');
+                const maxDelay = document.getElementById('maxMessageDelay');
+                const nonPeakStart = document.getElementById('nonPeakStart');
+                const nonPeakEnd = document.getElementById('nonPeakEnd');
+
+                // Daily Limit validation
+                dailyLimit.addEventListener('change', function() {
+                    const value = parseInt(this.value);
+                    if (value < 1) {
+                        alert('Daily limit must be at least 1');
+                        this.value = state.settings.dailyLimit;
+                        return;
+                    }
+                    state.settings.dailyLimit = value;
+                });
+
+                // Batch Size validation
+                batchSize.addEventListener('change', function() {
+                    const value = parseInt(this.value);
+                    if (value < 50 || value > 100) {
+                        alert('Batch size must be between 50 and 100');
+                        this.value = state.settings.batchSize;
+                        return;
+                    }
+                    state.settings.batchSize = value;
+                });
+
+                // Batch Gap validation
+                batchGap.addEventListener('change', function() {
+                    const value = parseFloat(this.value);
+                    if (value < 1 || value > 2) {
+                        alert('Batch gap must be between 1 and 2 hours');
+                        this.value = state.settings.batchGap;
+                        return;
+                    }
+                    state.settings.batchGap = value;
+                });
+
+                // Message Delay validation
+                minDelay.addEventListener('change', function() {
+                    const value = parseInt(this.value);
+                    if (value < 30 || value > 120) {
+                        alert('Minimum delay must be between 30 and 120 seconds');
+                        this.value = state.settings.minMessageDelay;
+                        return;
+                    }
+                    if (value > state.settings.maxMessageDelay) {
+                        alert('Minimum delay cannot be greater than maximum delay');
+                        this.value = state.settings.minMessageDelay;
+                        return;
+                    }
+                    state.settings.minMessageDelay = value;
+                });
+
+                maxDelay.addEventListener('change', function() {
+                    const value = parseInt(this.value);
+                    if (value < 30 || value > 120) {
+                        alert('Maximum delay must be between 30 and 120 seconds');
+                        this.value = state.settings.maxMessageDelay;
+                        return;
+                    }
+                    if (value < state.settings.minMessageDelay) {
+                        alert('Maximum delay cannot be less than minimum delay');
+                        this.value = state.settings.maxMessageDelay;
+                        return;
+                    }
+                    state.settings.maxMessageDelay = value;
+                });
+
+                // Non-peak hours validation
+                nonPeakStart.addEventListener('change', function() {
+                    const value = parseInt(this.value);
+                    if (value < 0 || value > 23) {
+                        alert('Start hour must be between 0 and 23');
+                        this.value = state.settings.nonPeakStart;
+                        return;
+                    }
+                    if (value >= state.settings.nonPeakEnd) {
+                        alert('Start hour must be less than end hour');
+                        this.value = state.settings.nonPeakStart;
+                        return;
+                    }
+                    state.settings.nonPeakStart = value;
+                });
+
+                nonPeakEnd.addEventListener('change', function() {
+                    const value = parseInt(this.value);
+                    if (value < 0 || value > 23) {
+                        alert('End hour must be between 0 and 23');
+                        this.value = state.settings.nonPeakEnd;
+                        return;
+                    }
+                    if (value <= state.settings.nonPeakStart) {
+                        alert('End hour must be greater than start hour');
+                        this.value = state.settings.nonPeakEnd;
+                        return;
+                    }
+                    state.settings.nonPeakEnd = value;
+                });
+            };
+
+            const saveSettings = async () => {
+                try {
+                    // Validate all settings before saving
+                    const settings = {
+                        dailyLimit: parseInt(document.getElementById('dailyLimit').value),
+                        batchSize: parseInt(document.getElementById('batchSize').value),
+                        batchGap: parseFloat(document.getElementById('batchGap').value),
+                        minMessageDelay: parseInt(document.getElementById('minMessageDelay').value),
+                        maxMessageDelay: parseInt(document.getElementById('maxMessageDelay').value),
+                        nonPeakStart: parseInt(document.getElementById('nonPeakStart').value),
+                        nonPeakEnd: parseInt(document.getElementById('nonPeakEnd').value)
+                    };
+
+                    // Validate settings
+                    if (settings.dailyLimit < 1) throw new Error('Daily limit must be at least 1');
+                    if (settings.batchSize < 50 || settings.batchSize > 100) throw new Error('Batch size must be between 50 and 100');
+                    if (settings.batchGap < 1 || settings.batchGap > 2) throw new Error('Batch gap must be between 1 and 2 hours');
+                    if (settings.minMessageDelay < 30 || settings.minMessageDelay > 120) throw new Error('Minimum delay must be between 30 and 120 seconds');
+                    if (settings.maxMessageDelay < 30 || settings.maxMessageDelay > 120) throw new Error('Maximum delay must be between 30 and 120 seconds');
+                    if (settings.minMessageDelay > settings.maxMessageDelay) throw new Error('Minimum delay cannot be greater than maximum delay');
+                    if (settings.nonPeakStart < 0 || settings.nonPeakStart > 23) throw new Error('Start hour must be between 0 and 23');
+                    if (settings.nonPeakEnd < 0 || settings.nonPeakEnd > 23) throw new Error('End hour must be between 0 and 23');
+                    if (settings.nonPeakStart >= settings.nonPeakEnd) throw new Error('Start hour must be less than end hour');
+
+                    // Save settings to localStorage
+                    localStorage.setItem('bulkSettings', JSON.stringify(settings));
+
+                    // Send settings to server if authenticated
+                    if (state.isAuthenticated) {
+                        await window.electronAPI.updateSettings({
+                            token: state.token,
+                            settings: settings
+                        });
+                    }
+
+                    // Show success message
+                    const successMsg = document.createElement('div');
+                    successMsg.className = 'success-message';
+                    successMsg.textContent = 'Settings saved successfully!';
+                    successMsg.style.cssText = `
+                        background: rgba(76, 175, 80, 0.1);
+                        color: #4CAF50;
+                        padding: 10px;
+                        border-radius: 4px;
+                        margin-top: 10px;
+                        text-align: center;
+                    `;
+                    document.getElementById('saveSettingsBtn').parentNode.appendChild(successMsg);
+                    setTimeout(() => successMsg.remove(), 3000);
+
+                } catch (error) {
+                    alert(`Error saving settings: ${error.message}`);
+                }
+            };
+
+            // Add event listener for settings tab
+            document.querySelector('.tab-btn[data-tab="settings"]').addEventListener('click', () => {
+                loadSettings();
+            });
+
+            // Add event listener for save settings button
+            document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+
+            // API Interaction Functions
+            const fetchQrStatus = async () => {
+                try {
+                    const data = await window.electronAPI.getQR(state.token);
+                    if (data.authenticated) {
+                        state.isAuthenticated = true;
+                        elements.qrCanvas.innerHTML = '';
+                        elements.qrStatus.textContent = 'Connected Successfully!';
+                        updateTabVisibility();
+                        updateAuthDisplay();
+                        updateMessages();
+                        updatePolls();
+                    } else if (data.qr) {
+                        elements.qrStatus.textContent = 'Scan QR Code to Connect';
+                        displayQrCode(data.qr);
+                    } else {
+                        elements.qrStatus.textContent = 'Waiting for QR Code...';
+                    }
+                } catch (error) {
+                    elements.qrStatus.textContent = 'Authentication required';
+                    console.error('QR status fetch error:', error.message);
+                }
+            };
+
+            const updateMessages = async () => {
+                if (!state.isAuthenticated) return;
+                try {
+                    state.messages = await window.electronAPI.getMessages(state.token);
+                    elements.messageList.innerHTML = state.messages.map(m => `
+                        <div class="message">
+                            <strong>From:</strong> ${m.from || 'Unknown'}<br>
+                            <strong>Message:</strong> ${m.body || 'No content'}<br>
+                            ${m.type === 'media' ? '<em>(Media with caption)</em><br>' : ''}
+                            <strong>Time:</strong> ${m.timestamp || 'N/A'}
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    console.error('Messages fetch error:', error.message);
+                }
+            };
+
+            const updatePolls = async (pollsData = null) => {
+                if (!state.isAuthenticated) return;
+                try {
+                    const { polls, pollVotes } = await window.electronAPI.getPolls(state.token);
+                    const pollsToUse = pollsData || polls;
+                    state.pollVotes = pollVotes || state.pollVotes;
+                    elements.pollList.innerHTML = Object.entries(pollsToUse).map(([id, poll]) => `
+                        <div class="message">
+                            <strong>Question:</strong> ${poll.question || 'N/A'}<br>
+                            <strong>Options:</strong> ${(poll.options || []).join(', ') || 'No options'}<br>
+                            <strong>Votes:</strong> ${JSON.stringify(state.pollVotes[id] || {})}
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    console.error('Polls fetch error:', error.message);
+                }
+            };
+
+            const register = async () => {
+                const days = document.getElementById('daysInput').value.trim();
+                if (!days || isNaN(days) || days < 1) {
+                    elements.authStatus.textContent = 'Please enter a valid number of days';
+                    elements.authStatus.className = 'error';
+                    return;
+                }
+                try {
+                    const data = await window.electronAPI.register(days);
+                    elements.authStatus.textContent = data.message || 'Registration initiated';
+                    elements.authStatus.className = 'success';
+                    
+                    // Store registration data with expiry date
+                    const now = new Date();
+                    state.registrationData = {
+                        registrationDate: now.getTime(),
+                        expiryDate: new Date(now.getTime() + days * 24 * 60 * 60 * 1000).getTime(),
+                        days: parseInt(days)
+                    };
+                    localStorage.setItem('registrationData', JSON.stringify(state.registrationData));
+                    updateAuthDisplay();
+                } catch (error) {
+                    elements.authStatus.textContent = error.message || 'Registration failed';
+                    elements.authStatus.className = 'error';
+                }
+            };
+
+            const verifyOTP = async () => {
+                const otp = document.getElementById('otpInput').value.trim();
+                if (!otp) {
+                    elements.authStatus.textContent = 'Please enter OTP';
+                    elements.authStatus.className = 'error';
+                    return;
+                }
+                
+                try {
+                    const data = await window.electronAPI.verifyOTP(otp);
+                    elements.authStatus.textContent = data.message || 'OTP verified';
+                    elements.authStatus.className = 'success';
+                    
+                    if (data.token) {
+                        state.isAuthenticated = true;
+                        state.token = data.token;
+                        localStorage.setItem('sessionToken', state.token);
+                        updateTabVisibility();
+                        updateAuthDisplay();
+                        document.querySelector('.tab-btn[data-tab="qr"]').click();
+                    }
+                } catch (error) {
+                    elements.authStatus.textContent = error.message || 'OTP verification failed';
+                    elements.authStatus.className = 'error';
+                    
+                    // Extract remaining attempts from error message
+                    const attemptsMatch = error.message.match(/(\d+) attempts remaining/);
+                    if (attemptsMatch) {
+                        const remainingAttempts = parseInt(attemptsMatch[1]);
+                        elements.attemptsRemaining.textContent = remainingAttempts;
+                        elements.attemptsRemaining.className = remainingAttempts <= 1 ? 'error' : 'warning';
+                    }
+                    
+                    if (error.message.includes('Maximum OTP attempts reached')) {
+                        elements.authStatus.textContent = 'Maximum attempts reached. Application will restart in 3 seconds.';
+                        elements.attemptsRemaining.textContent = '0';
+                        elements.attemptsRemaining.className = 'error';
+                        setTimeout(() => window.location.reload(), 3000);
+                    }
+                }
+            };
+
+            const arrayBufferToBase64 = (buffer) => {
+                const bytes = new Uint8Array(buffer);
+                let binary = '';
+                for (let i = 0; i < bytes.length; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return btoa(binary);
+            };
+
+            const sendMessage = async () => {
+                if (!state.isAuthenticated) return alert('Please authenticate first');
+                const number = document.getElementById('number').value.trim();
+                const message = document.getElementById('message').value.trim();
+                const fileInput = document.getElementById('attachment');
+                const file = fileInput.files[0];
+                let attachmentData = null;
+
+                if (!number || !message) return alert('Number and message are required');
+
+                if (file) {
+                    const reader = new FileReader();
+                    attachmentData = await new Promise((resolve, reject) => {
+                        reader.onload = () => resolve({
+                            name: file.name,
+                            data: arrayBufferToBase64(reader.result),
+                            mimetype: file.type || 'application/octet-stream'
+                        });
+                        reader.onerror = () => reject(new Error('Failed to read file'));
+                        reader.readAsArrayBuffer(file);
+                    });
+                }
+
+                const sendBtn = document.getElementById('sendBtn');
+                sendBtn.disabled = true;
+                try {
+                    await window.electronAPI.sendMessage({ token: state.token, number, message, attachment: attachmentData });
+                    const feedback = attachmentData 
+                        ? `Media sent with caption "${message}" to ${number}` 
+                        : `Message "${message}" sent to ${number}`;
+                    elements.sendLog.innerHTML += `<div class="log-entry">${feedback}</div>`;
+                    elements.sendLog.scrollTop = elements.sendLog.scrollHeight;
+                    document.getElementById('number').value = '';
+                    document.getElementById('message').value = '';
+                    fileInput.value = '';
+                    
+                } catch (error) {
+                    console.error('Send message error:', error);
+                   
+                    elements.sendLog.innerHTML += `<div class="log-entry error">Failed to send to ${number}</div>`;
+                } finally {
+                    sendBtn.disabled = false;
+                }
+            };
+
+            const generateVariations = async () => {
+                if (!state.isAuthenticated) return alert('Please authenticate first');
+                const text = document.getElementById('bulkMessage').value.trim();
+                if (!text) return alert('Enter a message to generate variations');
+
+                try {
+                    const prompt = `Generate 4 different variations of the following text, keeping the core message intact but varying the wording and style:\n\n${text}`;
+                    const { response } = await window.electronAPI.generateResponse({ token: state.token, prompt });
+                    const variations = response.split('\n').filter(line => line.trim()).slice(0, 4);
+                    if (variations.length < 4) throw new Error('Could not generate enough variations');
+
+                    state.textVariations = variations;
+                    elements.variationDisplay.innerHTML = variations.map((v, i) => `
+                        <div class="variation-item"><strong>Variation ${i + 1}:</strong> ${v}</div>
+                    `).join('');
+                    elements.confirmVariationsBtn.style.display = 'block';
+                } catch (error) {
+                    console.error('Variation generation error:', error);
+                    elements.variationDisplay.innerHTML = `<div class="variation-item error">Error: ${error.message}</div>`;
+                }
+            };
+
+            const confirmVariations = () => {
+                if (state.textVariations.length !== 4) return alert('Variations not generated yet');
+                if (confirm('Replace the current message with these variations?')) {
+                    document.getElementById('bulkMessage').value = state.textVariations.join('\n\n---\n\n');
+                    elements.variationDisplay.innerHTML = '<div class="variation-item">Variations applied to textarea</div>';
+                    elements.confirmVariationsBtn.style.display = 'none';
+                }
+            };
+
+            const sendBulk = async () => {
+                if (!state.isAuthenticated) return alert('Please authenticate first');
+                if (state.isSending) return alert('Bulk send in progress');
+
+                const numbers = document.getElementById('numbers').value.split('\n').map(n => n.trim()).filter(Boolean);
+                let message = document.getElementById('bulkMessage').value.trim();
+                const type = document.getElementById('bulkType').value;
+                const options = document.getElementById('pollOptions').value.split('\n').map(o => o.trim()).filter(Boolean);
+                const resume = document.getElementById('resume').checked;
+                const fileInput = document.getElementById('bulkAttachment');
+                const file = fileInput.files[0];
+                let attachmentData = null;
+
+                if (!numbers.length || !message) return alert('Numbers and message are required');
+                if (type === 'poll' && !options.length) return alert('Poll options required');
+
+                // Select one random variation if available, otherwise use original message
+                const selectedMessage = state.textVariations.length === 4 
+                    ? state.textVariations[Math.floor(Math.random() * 4)]
+                    : message;
+
+                if (file) {
+                    const reader = new FileReader();
+                    attachmentData = await new Promise((resolve, reject) => {
+                        reader.onload = () => resolve({
+                            name: file.name,
+                            data: arrayBufferToBase64(reader.result),
+                            mimetype: file.type || 'application/octet-stream'
+                        });
+                        reader.onerror = () => reject(new Error('Failed to read file'));
+                        reader.readAsArrayBuffer(file);
+                    });
+                }
+
+                const variables = [];
+                const regex = /\{([^}]+)\}/g;
+                let match;
+                while ((match = regex.exec(selectedMessage))) {
+                    variables.push(match[1].split(',').map(opt => opt.trim()).filter(Boolean));
+                }
+
+                try {
+                    await window.electronAPI.sendBulk({
+                        token: state.token,
+                        numbers,
+                        message: selectedMessage,
+                        type,
+                        options,
+                        resume,
+                        variables,
+                        settings: state.settings,
+                        attachment: attachmentData
+                    });
+                } catch (error) {
+                    elements.sendLog.innerHTML += `<div class="log-entry error">Bulk send error</div>`;
+                }
+            };
+
+            const pauseBulk = async () => {
+                if (!state.isSending) return alert('No bulk send in progress');
+                try {
+                    await window.electronAPI.pauseBulk(state.token);
+                } catch (error) {
+                    elements.sendLog.innerHTML += `<div class="log-entry error">Pause error: </div>`;
+                }
+            };
+
+            const generateDullText = async () => {
+                if (!state.isAuthenticated) return alert('Please authenticate first');
+                const text = document.getElementById('bulkMessage').value.trim();
+                if (!text) return alert('Enter a message to generate dull text');
+                try {
+                    const { response } = await window.electronAPI.generateResponse({
+                        token: state.token,
+                        prompt: `Generate a short, less engaging version of: ${text}`
+                    });
+                    document.getElementById('bulkMessage').value = response;
+                } catch (error) {
+                    alert(`Dull text generation failed: ${error.message}`);
+                }
+            };
+
+            const generateMarketingPost = async () => {
+                if (!state.isAuthenticated) return alert('Please authenticate first');
+                const fields = {
+                    companyName: document.getElementById('companyName').value.trim(),
+                    productDetails: document.getElementById('productDetails').value.trim(),
+                    targetGender: document.getElementById('targetGender').value,
+                    targetAudience: document.getElementById('targetAudience').value.trim(),
+                    tone: document.getElementById('tone').value.trim(),
+                    keySellingPoints: document.getElementById('keySellingPoints').value.trim(),
+                    callToAction: document.getElementById('callToAction').value.trim(),
+                    currentPromotion: document.getElementById('currentPromotion').value.trim()
+                };
+
+                if (Object.values(fields).some(val => !val)) return alert('All fields are required');
+
+                const generateBtn = document.getElementById('generateMarketingBtn');
+                generateBtn.disabled = true;
+                try {
+                    const { response } = await window.electronAPI.generateResponse({
+                        token: state.token,
+                        prompt: `Generate a marketing post using the following details:
+                        Company: ${fields.companyName}
+                        Product: ${fields.productDetails}
+                        Target Gender: ${fields.targetGender}
+                        Audience: ${fields.targetAudience}
+                        Tone: ${fields.tone}
+                        Key Points: ${fields.keySellingPoints}
+                        CTA: ${fields.callToAction}
+                        Current offer: ${fields.currentPromotion}`
+                    });
+                    
+                    // Split the response into individual posts and format them
+                    const posts = response.split('\n\n').filter(post => post.trim());
+                    const formattedResponse = posts.map((post, index) => `Post ${index + 1}:\n${post}`).join('\n\n');
+                    
+                    state.geminiResponse = formattedResponse;
+                    document.getElementById('geminiResponse').value = formattedResponse;
+                } catch (error) {
+                    document.getElementById('geminiResponse').value = `Error: ${error.message}`;
+                } finally {
+                    generateBtn.disabled = false;
+                }
+            };
+
+            const savePrompt = async () => {
+                if (!state.isAuthenticated) return alert('Please authenticate first');
+                const prompt = document.getElementById('geminiResponse').value.trim();
+                if (!prompt) return alert('No prompt to save');
+                try {
+                    const prompts = await window.electronAPI.savePrompt({ token: state.token, prompt });
+                    document.getElementById('geminiResponse').value = 'Prompt saved successfully.';
+                    socket.emit('geminiPrompts', prompts);
+                } catch (error) {
+                    alert(`Save prompt failed: ${error.message}`);
+                }
+            };
+
+            const generateResponse = async () => {
+                if (!state.isAuthenticated) return alert('Please authenticate first');
+                const prompt = document.getElementById('promptSelectGemini').value;
+                if (!prompt) return alert('Select a prompt first');
+                const generateBtn = document.getElementById('generateBtn');
+                generateBtn.disabled = true;
+                try {
+                    const { response } = await window.electronAPI.generateResponse({ token: state.token, prompt });
+                    state.geminiResponse = response;
+                    document.getElementById('geminiResponse').value = response;
+                } catch (error) {
+                    document.getElementById('geminiResponse').value = `Error: ${error.message}`;
+                } finally {
+                    generateBtn.disabled = false;
+                }
+            };
+
+            // New Analytics Functions
+            const updateAnalytics = async (timeRange = state.selectedTimeRange) => {
+                if (!state.isAuthenticated) return;
+                
+                try {
+                    let timeRangeParam = timeRange;
+                    
+                    // Handle custom date range
+                    if (timeRange === 'custom') {
+                        const start = elements.startDate.value;
+                        const end = elements.endDate.value;
+                        if (!start || !end) {
+                            alert('Please select both start and end dates');
+                            return;
+                        }
+                        timeRangeParam = { start, end };
+                    }
+                    
+                    state.analytics = await window.electronAPI.getAnalytics({ 
+                        token: state.token, 
+                        timeRange: timeRangeParam 
+                    });
+                    
+                    // Update summary cards
+                    elements.totalSent.textContent = state.analytics.totalSent;
+                    elements.totalReceived.textContent = state.analytics.totalReceived;
+                    elements.seenRate.textContent = state.analytics.seenRate;
+                    elements.avgResponseTime.textContent = state.analytics.avgResponseTime;
+                    
+                    // Update engagement chart
+                    updateEngagementChart();
+                    
+                    // Update peak times
+                    updatePeakTimes();
+                    
+                    // Update message type breakdown
+                    updateMessageTypeBreakdown();
+                    
+                    // Update top messages
+                    updateTopMessages();
+                    
+                } catch (error) {
+                    console.error('Analytics fetch error:', error.message);
+                }
+            };
+            
+            const updateEngagementChart = () => {
+                if (!state.analytics?.dailyEngagement) return;
+                
+                const chartContainer = elements.engagementChart;
+                const chartPlaceholder = chartContainer.querySelector('.chart-placeholder');
+                
+                // Clear existing chart
+                chartPlaceholder.innerHTML = '';
+                
+                // Create bars for each day
+                state.analytics.dailyEngagement.forEach(day => {
+                    const totalMessages = day.sent + day.received;
+                    // Calculate height percentage (max 95%)
+                    const maxValue = Math.max(...state.analytics.dailyEngagement.map(d => d.sent + d.received));
+                    const heightPercentage = maxValue > 0 ? (totalMessages / maxValue * 95) : 0;
+                    
+                    const bar = document.createElement('div');
+                    bar.className = 'chart-bar';
+                    bar.style.height = `${heightPercentage}%`;
+                    bar.title = `${day.date}: ${totalMessages} messages (${day.sent} sent, ${day.received} received)`;
+                    
+                    chartPlaceholder.appendChild(bar);
+                });
+                
+                // If no data, show placeholder
+                if (state.analytics.dailyEngagement.length === 0) {
+                    const noDataMsg = document.createElement('div');
+                    noDataMsg.textContent = 'No data available for selected period';
+                    noDataMsg.style.textAlign = 'center';
+                    noDataMsg.style.width = '100%';
+                    noDataMsg.style.marginTop = '80px';
+                    noDataMsg.style.color = 'var(--gray-light)';
+                    chartPlaceholder.appendChild(noDataMsg);
+                }
+            };
+            
+            const updatePeakTimes = () => {
+                if (!state.analytics?.timeSlots) return;
+                
+                const timeSlotContainer = document.querySelector('.time-slots');
+                timeSlotContainer.innerHTML = '';
+                
+                state.analytics.timeSlots.forEach(slot => {
+                    const timeSlot = document.createElement('div');
+                    timeSlot.className = 'time-slot';
+                    
+                    const timeLabel = document.createElement('div');
+                    timeLabel.className = 'time-label';
+                    timeLabel.textContent = slot.label;
+                    
+                    const timeBar = document.createElement('div');
+                    timeBar.className = 'time-bar';
+                    
+                    const timeFill = document.createElement('div');
+                    timeFill.className = 'time-fill';
+                    timeFill.style.width = `${slot.percentage}%`;
+                    timeFill.textContent = `${slot.percentage}%`;
+                    
+                    timeBar.appendChild(timeFill);
+                    timeSlot.appendChild(timeLabel);
+                    timeSlot.appendChild(timeBar);
+                    timeSlotContainer.appendChild(timeSlot);
+                });
+            };
+            
+            const updateMessageTypeBreakdown = () => {
+                if (!state.analytics?.typePercentages) return;
+                
+                const { text, media, other } = state.analytics.typePercentages;
+                
+                // Update pie chart
+                document.querySelector('.pie-segment:nth-child(1)').style.clipPath = 
+                    `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.sin(2 * Math.PI * text / 100)}% ${50 - 50 * Math.cos(2 * Math.PI * text / 100)}%, 100% 100%, 50% 100%)`;
+                
+                document.querySelector('.pie-segment:nth-child(2)').style.transform = 
+                    `rotate(${360 * text / 100}deg)`;
+                
+                document.querySelector('.pie-center').textContent = `${text}%`;
+                
+                // Update legend
+                document.querySelector('.legend-item:nth-child(1) .legend-label').textContent = `Text (${text}%)`;
+                document.querySelector('.legend-item:nth-child(2) .legend-label').textContent = `Media (${media}%)`;
+                document.querySelector('.legend-item:nth-child(3) .legend-label').textContent = `Other (${other}%)`;
+            };
+            
+            const updateTopMessages = () => {
+                if (!state.analytics?.topMessages) return;
+                
+                const topMessagesContainer = elements.topMessages;
+                topMessagesContainer.innerHTML = '';
+                
+                if (state.analytics.topMessages.length === 0) {
+                    topMessagesContainer.innerHTML = '<div class="top-message">No message data available for selected period</div>';
+                    return;
+                }
+                
+                state.analytics.topMessages.forEach(msg => {
+                    const messageElement = document.createElement('div');
+                    messageElement.className = 'top-message';
+                    
+                    const preview = document.createElement('div');
+                    preview.className = 'message-preview';
+                    preview.textContent = `"${msg.content}"`;
+                    
+                    const stats = document.createElement('div');
+                    stats.className = 'message-stats';
+                    
+                    // Format seen time
+                    let seenTimeText = 'Not seen';
+                    if (msg.seenTime !== null) {
+                        if (msg.seenTime < 60000) {
+                            seenTimeText = `Seen in ${Math.round(msg.seenTime / 1000)}s`;
+                        } else if (msg.seenTime < 3600000) {
+                            seenTimeText = `Seen in ${Math.round(msg.seenTime / 60000)}m`;
+                        } else {
+                            seenTimeText = `Seen in ${Math.round(msg.seenTime / 3600000)}h`;
+                        }
+                    }
+                    
+                    const seenStat = document.createElement('div');
+                    seenStat.className = 'stat-item';
+                    seenStat.textContent = seenTimeText;
+                    
+                    const replyStat = document.createElement('div');
+                    replyStat.className = 'stat-item';
+                    replyStat.textContent = `Replies: ${msg.responseCount}`;
+                    
+                    stats.appendChild(seenStat);
+                    stats.appendChild(replyStat);
+                    
+                    messageElement.appendChild(preview);
+                    messageElement.appendChild(stats);
+                    
+                    topMessagesContainer.appendChild(messageElement);
+                });
+            };
+            
+            // Event listener for time range selector
+            const setupAnalyticsControls = () => {
+                elements.timeRange.addEventListener('change', function() {
+                    state.selectedTimeRange = this.value;
+                    elements.customDateRange.style.display = this.value === 'custom' ? 'flex' : 'none';
+                    
+                    if (this.value !== 'custom') {
+                        updateAnalytics(this.value);
+                    }
+                });
+                
+                elements.refreshAnalytics.addEventListener('click', () => {
+                    updateAnalytics(state.selectedTimeRange);
+                });
+                
+                // Initialize date inputs with reasonable defaults
+                const today = new Date();
+                const lastWeek = new Date();
+                lastWeek.setDate(today.getDate() - 7);
+                
+                elements.startDate.valueAsDate = lastWeek;
+                elements.endDate.valueAsDate = today;
+            };
+
+            // Socket Event Listeners
+            socket.on('connect', () => {
+                fetchQrStatus();
+                updateTabVisibility();
+            });
+
+            socket.on('qrUpdate', qr => {
+                elements.qrStatus.textContent = 'Scan QR Code to Connect';
+                displayQrCode(qr);
+            });
+
+            socket.on('authSuccess', () => {
+                if (state.isAuthenticated) {
+                    elements.qrCanvas.innerHTML = '';
+                    elements.qrStatus.textContent = 'Connected Successfully!';
+                    updateTabVisibility();
+                    updateMessages();
+                    updatePolls();
+                }
+            });
+
+            socket.on('connection complete', () => {
+                elements.qrStatus.textContent = 'WhatsApp Client Ready';
+            });
+
+            socket.on('clientDisconnected', reason => {
+                elements.qrCanvas.innerHTML = '';
+                elements.qrStatus.textContent = `Disconnected: ${reason}. Reconnecting...`;
+                state.isAuthenticated = false;
+                updateTabVisibility();
+                fetchQrStatus();
+            });
+
+            socket.on('newMessage', messages => {
+                state.messages = messages;
+                updateMessages();
+            });
+
+            socket.on('pollUpdate', ({ pollId, votes }) => {
+                state.pollVotes[pollId] = votes;
+                updatePolls();
+            });
+
+            socket.on('init', ({ messages, polls, pollVotes, authenticated, qr }) => {
+                state.messages = messages || [];
+                state.pollVotes = pollVotes || {};
+                state.isAuthenticated = authenticated;
+                updateTabVisibility();
+                if (state.isAuthenticated) {
+                    updateMessages();
+                    updatePolls(polls);
+                    elements.qrStatus.textContent = 'Connected Successfully!';
+                    elements.qrCanvas.innerHTML = '';
+                } else if (qr) {
+                    elements.qrStatus.textContent = 'Scan QR Code to Connect';
+                    displayQrCode(qr);
+                } else {
+                    elements.qrStatus.textContent = 'Waiting for QR Code...';
+                }
+            });
+
+            socket.on('bulkStart', ({ total, current }) => {
+                state.isSending = true;
+                elements.sendLog.innerHTML = `<div class="log-entry">Starting bulk send to ${total} numbers...</div>`;
+                elements.sendBulkBtn.style.display = 'none';
+                elements.pauseBulkBtn.style.display = 'block';
+                document.getElementById('bulkProgress').style.width = `${(current / total * 100)}%`;
+            });
+
+            socket.on('bulkProgress', ({ number, status, current, total }) => {
+                elements.sendLog.innerHTML += `<div class="log-entry">${number}: ${status} (${current}/${total})</div>`;
+                elements.sendLog.scrollTop = elements.sendLog.scrollHeight;
+                document.getElementById('bulkProgress').style.width = `${(current / total * 100)}%`;
+            });
+
+            socket.on('bulkPaused', ({ current, total }) => {
+                state.isSending = false;
+                elements.sendLog.innerHTML += `<div class="log-entry">Paused at ${current}/${total}</div>`;
+                elements.sendBulkBtn.style.display = 'block';
+                elements.pauseBulkBtn.style.display = 'none';
+            });
+
+            socket.on('bulkComplete', ({ total }) => {
+                state.isSending = false;
+                elements.sendLog.innerHTML += `<div class="log-entry">Completed sending to ${total} numbers</div>`;
+                elements.sendBulkBtn.style.display = 'block';
+                elements.pauseBulkBtn.style.display = 'none';
+                document.getElementById('bulkProgress').style.width = '100%';
+            });
+
+            socket.on('bulkError', ({ message }) => {
+                state.isSending = false;
+                elements.sendLog.innerHTML += `<div class="log-entry error">Error: ${message}</div>`;
+                elements.sendBulkBtn.style.display = 'block';
+                elements.pauseBulkBtn.style.display = 'none';
+            });
+
+            socket.on('geminiPrompts', prompts => {
+                const options = prompts.map(p => `<option value="${p}">${p}</option>`).join('');
+                document.getElementById('promptSelect').innerHTML = options;
+                document.getElementById('promptSelectGemini').innerHTML = options;
+            });
+
+            socket.on('analyticsUpdate', (data) => {
+                state.analytics = data;
+                if (document.querySelector('.tab-btn[data-tab="analytics"]').classList.contains('active')) {
+                    updateAnalytics();
+                }
+            });
+
+            // Event Listeners
+            elements.tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    if (tab.dataset.tab !== 'auth' && !state.isAuthenticated) {
+                        alert('Authentication required');
+                        return;
+                    }
+                    elements.tabs.forEach(t => t.classList.remove('active'));
+                    elements.contents.forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+
+                    switch (tab.dataset.tab) {
+                        case 'qr': if (state.isAuthenticated) fetchQrStatus(); break;
+                        case 'messages': if (state.isAuthenticated) updateMessages(); break;
+                        case 'polls': if (state.isAuthenticated) updatePolls(); break;
+                        case 'analytics': if (state.isAuthenticated) updateAnalytics(); break;
+                        case 'settings': loadSettings(); break;
+                        case 'chat': // Add chat tab functionality
+                            // Implement chat tab content
+                            break;
+                    }
+                });
+            });
+
+            document.getElementById('bulkType').addEventListener('change', e => {
+                document.getElementById('pollOptions').style.display = e.target.value === 'poll' ? 'block' : 'none';
+            });
+
+            document.getElementById('promptSelect').addEventListener('change', e => {
+                document.getElementById('bulkMessage').value = e.target.value;
+            });
+
+            document.getElementById('registerBtn').addEventListener('click', register);
+            document.getElementById('verifyBtn').addEventListener('click', verifyOTP);
+            document.getElementById('sendBtn').addEventListener('click', sendMessage);
+            document.getElementById('sendBulkBtn').addEventListener('click', sendBulk);
+            document.getElementById('pauseBulkBtn').addEventListener('click', pauseBulk);
+            document.getElementById('generateDullBtn').addEventListener('click', generateDullText);
+            document.getElementById('generateMarketingBtn').addEventListener('click', generateMarketingPost);
+            document.getElementById('savePromptBtn').addEventListener('click', savePrompt);
+            document.getElementById('generateBtn').addEventListener('click', generateResponse);
+            document.getElementById('generateVariationsBtn').addEventListener('click', generateVariations);
+            document.getElementById('confirmVariationsBtn').addEventListener('click', confirmVariations);
+
+            // Initial Setup
+            updateTabVisibility();
+            fetchQrStatus();
+            setupAnalyticsControls();
+
+            // Chat and Agent Management
+            let selectedChat = null;
+            let currentAgentStatus = { enabled: false, mode: 'auto', activeChats: [] };
+            
+            // DOM elements for chat
+            const chatElements = {
+                chatList: document.getElementById('chatList'),
+                messageContainer: document.getElementById('messageContainer'),
+                chatMessage: document.getElementById('chatMessage'),
+                sendChatBtn: document.getElementById('sendChatBtn'),
+                selectedChatInfo: document.getElementById('selectedChatInfo'),
+                startAgentBtn: document.getElementById('startAgentBtn'),
+                stopAgentBtn: document.getElementById('stopAgentBtn'),
+                configureAgentBtn: document.getElementById('configureAgentBtn'),
+                chatSearch: document.getElementById('chatSearch'),
+                chatAttachment: document.getElementById('chatAttachment'),
+                
+                // Modal elements
+                agentConfigModal: document.getElementById('agentConfigModal'),
+                modalClose: document.querySelector('.modal-close'),
+                saveAgentConfig: document.getElementById('saveAgentConfig'),
+                
+                // Agent settings form elements
+                agentPersonality: document.getElementById('agentPersonality'),
+                agentGender: document.getElementById('agentGender'),
+                ageMin: document.getElementById('ageMin'),
+                ageMax: document.getElementById('ageMax'),
+                delayMin: document.getElementById('delayMin'),
+                delayMax: document.getElementById('delayMax'),
+                responseLength: document.getElementById('responseLength'),
+                greeting: document.getElementById('greeting'),
+                workStart: document.getElementById('workStart'),
+                workEnd: document.getElementById('workEnd'),
+                responseRate: document.getElementById('responseRate'),
+                agentMode: document.getElementById('agentMode'),
+                respondKnown: document.getElementById('respondKnown'),
+                respondUnknown: document.getElementById('respondUnknown'),
+                respondGroups: document.getElementById('respondGroups'),
+                blacklistWords: document.getElementById('blacklistWords'),
+                businessRole: document.getElementById('businessRole'),
+                leadQualification: document.getElementById('leadQualification'),
+                companyName: document.getElementById('companyName'),
+                products: document.getElementById('products'),
+                sellingPoints: document.getElementById('sellingPoints'),
+                followupStrategy: document.getElementById('followupStrategy'),
+                productName: document.getElementById('productName'),
+                productDescription: document.getElementById('productDescription'),
+                productPrice: document.getElementById('productPrice'),
+                productFeatures: document.getElementById('productFeatures'),
+                productBenefits: document.getElementById('productBenefits'),
+                productAvailability: document.getElementById('productAvailability'),
+                productDeliveryInfo: document.getElementById('productDeliveryInfo'),
+                productWarranty: document.getElementById('productWarranty'),
+                productReturnPolicy: document.getElementById('productReturnPolicy'),
+                conversationRules: document.getElementById('conversationRules'),
+                customPromptIntro: document.getElementById('customPromptIntro'),
+                customPromptPresentation: document.getElementById('customPromptPresentation'),
+                customPromptObjections: document.getElementById('customPromptObjections'),
+                customPromptClosing: document.getElementById('customPromptClosing'),
+                customPrompt: document.getElementById('customPrompt'),
+                alwaysReplyInActiveChats: document.getElementById('alwaysReplyInActiveChats'),
+                maxConsecutiveResponses: document.getElementById('maxConsecutiveResponses'),
+                conversationMemory: document.getElementById('conversationMemory'),
+                minResponseInterval: document.getElementById('minResponseInterval')
+            };
+            
+            // Load chats
+            const loadChats = async () => {
+                if (!state.isAuthenticated) return;
+                
+                try {
+                    const response = await window.electronAPI.getChats(state.token);
+                    if (response.success) {
+                        renderChatList(response.chats);
+                    } else {
+                        console.error('Failed to load chats:', response.message);
+                    }
+                } catch (error) {
+                    console.error('Error loading chats:', error);
+                }
+            };
+            
+            // Render chat list
+            const renderChatList = (chats) => {
+                chatElements.chatList.innerHTML = '';
+                
+                if (chats.length === 0) {
+                    chatElements.chatList.innerHTML = '<div class="empty-state">No chats available</div>';
+                    return;
+                }
+                
+                chats.forEach(chat => {
+                    const chatItem = document.createElement('div');
+                    chatItem.className = `chat-item ${selectedChat?.id === chat.id ? 'active' : ''}`;
+                    if (currentAgentStatus.activeChats.includes(chat.id)) {
+                        chatItem.classList.add('agent-active');
+                    }
+                    
+                    const lastMessage = chat.lastMessage?.body || 'No messages yet';
+                    const unreadBadge = chat.unreadCount > 0 
+                        ? `<span class="chat-item-unread">${chat.unreadCount}</span>` 
+                        : '';
+                    
+                    chatItem.innerHTML = `
+                        <div class="chat-item-name">${chat.name} ${unreadBadge}</div>
+                        <div class="chat-item-last">${lastMessage}</div>
+                    `;
+                    
+                    chatItem.addEventListener('click', () => selectChat(chat));
+                    chatElements.chatList.appendChild(chatItem);
+                });
+            };
+            
+            // Select a chat
+            const selectChat = async (chat) => {
+                selectedChat = chat;
+                
+                // Update UI
+                document.querySelectorAll('.chat-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector(`.chat-item:nth-child(${Array.from(chatElements.chatList.children).findIndex(el => el.querySelector('.chat-item-name').textContent.includes(chat.name)) + 1})`).classList.add('active');
+                
+                chatElements.selectedChatInfo.innerHTML = `<h4>${chat.name}</h4>`;
+                chatElements.messageContainer.innerHTML = '<div class="loading">Loading messages...</div>';
+                chatElements.chatMessage.disabled = false;
+                chatElements.sendChatBtn.disabled = false;
+                
+                // Update agent buttons
+                const isChatActive = currentAgentStatus.activeChats.includes(chat.id);
+                chatElements.startAgentBtn.style.display = isChatActive ? 'none' : 'block';
+                chatElements.stopAgentBtn.style.display = isChatActive ? 'block' : 'none';
+                
+                // Load chat history
+                try {
+                    const response = await window.electronAPI.getChatHistory({ token: state.token, chatId: chat.id });
+                    if (response.success) {
+                        renderChatHistory(response.history);
+                    } else {
+                        console.error('Failed to load chat history:', response.message);
+                        chatElements.messageContainer.innerHTML = '<div class="empty-state">Failed to load messages</div>';
+                    }
+                } catch (error) {
+                    console.error('Error loading chat history:', error);
+                    chatElements.messageContainer.innerHTML = '<div class="empty-state">Error loading messages</div>';
+                }
+            };
+            
+            // Render chat history
+            const renderChatHistory = (messages) => {
+                chatElements.messageContainer.innerHTML = '';
+                
+                if (messages.length === 0) {
+                    chatElements.messageContainer.innerHTML = '<div class="empty-state">No messages yet</div>';
+                    return;
+                }
+                
+                // Sort messages by timestamp (oldest first)
+                const sortedMessages = [...messages].sort((a, b) => {
+                    return new Date(a.timestamp) - new Date(b.timestamp);
+                });
+                
+                // Group messages by date
+                let currentDate = '';
+                
+                sortedMessages.forEach(msg => {
+                    // Check if we need to add a date header
+                    const msgDate = new Date(msg.timestamp).toLocaleDateString();
+                    if (msgDate !== currentDate) {
+                        currentDate = msgDate;
+                        const dateHeader = document.createElement('div');
+                        dateHeader.className = 'message-date-header';
+                        dateHeader.textContent = msgDate;
+                        chatElements.messageContainer.appendChild(dateHeader);
+                    }
+                    
+                    // Create message element
+                    const msgElement = document.createElement('div');
+                    msgElement.className = `message-bubble ${msg.fromMe ? 'message-outgoing' : 'message-incoming'}`;
+                    msgElement.dataset.messageId = msg.id || '';
+                    
+                    // Format time
+                    const time = new Date(msg.timestamp).toLocaleTimeString([], { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                    
+                    // Add robot emoji if it's an agent message
+                    const isAgentMessage = msg.fromMe && msg.id && msg.id.includes('agent');
+                    
+                    // Create read status indicators for outgoing messages
+                    let readStatus = '';
+                    if (msg.fromMe) {
+                        if (msg.seen) {
+                            readStatus = '<span class="message-read-status read">✓✓</span>';
+                        } else if (msg.delivered) {
+                            readStatus = '<span class="message-read-status delivered">✓✓</span>';
+                        } else {
+                            readStatus = '<span class="message-read-status sent">✓</span>';
+                        }
+                    }
+                    
+                    // Add agent indicator if needed
+                    const agentIndicator = isAgentMessage ? '🤖' : '';
+                    
+                    msgElement.innerHTML = `
+                        <div class="message-content">${msg.body}</div>
+                        <div class="message-time">${time} ${agentIndicator} ${readStatus}</div>
+                    `;
+                    
+                    chatElements.messageContainer.appendChild(msgElement);
+                });
+                
+                // Scroll to bottom
+                chatElements.messageContainer.scrollTop = chatElements.messageContainer.scrollHeight;
+            };
+            
+            // Send a message
+            const sendChatMessage = async () => {
+                if (!selectedChat) return;
+                
+                const message = chatElements.chatMessage.value.trim();
+                if (!message) return;
+                
+                // Get attachment if any
+                const file = chatElements.chatAttachment.files[0];
+                let attachmentData = null;
+                
+                if (file) {
+                    const reader = new FileReader();
+                    attachmentData = await new Promise((resolve, reject) => {
+                        reader.onload = () => resolve({
+                            name: file.name,
+                            data: arrayBufferToBase64(reader.result),
+                            mimetype: file.type || 'application/octet-stream'
+                        });
+                        reader.onerror = () => reject(new Error('Failed to read file'));
+                        reader.readAsArrayBuffer(file);
+                    });
+                }
+                
+                // Disable inputs while sending
+                chatElements.sendChatBtn.disabled = true;
+                chatElements.chatMessage.disabled = true;
+                
+                try {
+                    // Show sending indicator
+                    const tempMsg = document.createElement('div');
+                    tempMsg.className = 'message-bubble message-outgoing message-sending';
+                    tempMsg.innerHTML = `
+                        <div class="message-content">${message}</div>
+                        <div class="message-time">Sending...</div>
+                    `;
+                    
+                    // Clear empty state if present
+                    if (chatElements.messageContainer.querySelector('.empty-state')) {
+                        chatElements.messageContainer.innerHTML = '';
+                    }
+                    
+                    chatElements.messageContainer.appendChild(tempMsg);
+                    chatElements.messageContainer.scrollTop = chatElements.messageContainer.scrollHeight;
+                    
+                    // Send the message
+                    const response = await window.electronAPI.sendChatMessage({
+                        token: state.token,
+                        chatId: selectedChat.id,
+                        message,
+                        attachment: attachmentData
+                    });
+                    
+                    if (response.success) {
+                        // Replace temp message with actual message
+                        const msgElement = document.createElement('div');
+                        msgElement.className = 'message-bubble message-outgoing';
+                        
+                        const time = new Date(response.timestamp).toLocaleTimeString([], { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                        });
+                        
+                        msgElement.innerHTML = `
+                            <div class="message-content">${message}</div>
+                            <div class="message-time">${time}</div>
+                        `;
+                        
+                        if (tempMsg.parentNode) {
+                            tempMsg.parentNode.replaceChild(msgElement, tempMsg);
+                        } else {
+                            chatElements.messageContainer.appendChild(msgElement);
+                        }
+                        
+                        chatElements.messageContainer.scrollTop = chatElements.messageContainer.scrollHeight;
+                        
+                        // Clear input
+                        chatElements.chatMessage.value = '';
+                        chatElements.chatAttachment.value = '';
+                    } else {
+                        // Show error
+                        tempMsg.classList.add('message-error');
+                        tempMsg.querySelector('.message-time').textContent = 'Failed to send';
+                        setTimeout(() => {
+                            if (tempMsg.parentNode) {
+                                tempMsg.parentNode.removeChild(tempMsg);
+                            }
+                        }, 3000);
+                        
+                        alert(`Failed to send message: ${response.message}`);
+                    }
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    alert('Error sending message. Please try again.');
+                } finally {
+                    chatElements.sendChatBtn.disabled = false;
+                    chatElements.chatMessage.disabled = false;
+                    chatElements.chatMessage.focus();
+                }
+            };
+            
+            // Load agent settings
+            const loadAgentSettings = async () => {
+                try {
+                    const response = await window.electronAPI.getAgentSettings(state.token);
+                    if (response.success) {
+                        const settings = response.settings;
+                        
+                        // Update form with current settings
+                        chatElements.agentPersonality.value = settings.personality || 'professional';
+                        chatElements.agentGender.value = settings.gender || 'neutral';
+                        chatElements.ageMin.value = settings.ageRange?.min || 25;
+                        chatElements.ageMax.value = settings.ageRange?.max || 35;
+                        chatElements.delayMin.value = settings.responseDelay?.min || 2;
+                        chatElements.delayMax.value = settings.responseDelay?.max || 5;
+                        chatElements.responseLength.value = settings.maxResponseLength || 150;
+                        chatElements.greeting.value = settings.greeting || 'Hello! How can I assist you today?';
+                        chatElements.workStart.value = settings.workingHours?.start || 9;
+                        chatElements.workEnd.value = settings.workingHours?.end || 21;
+                        chatElements.responseRate.value = settings.responseRate || 80;
+                        chatElements.agentMode.value = settings.mode || 'auto';
+                        chatElements.respondKnown.checked = settings.autoRespond?.knownUsers !== false;
+                        chatElements.respondUnknown.checked = settings.autoRespond?.unknownUsers === true;
+                        chatElements.respondGroups.checked = settings.autoRespond?.groups === true;
+                        chatElements.blacklistWords.value = (settings.blacklistedWords || []).join(', ');
+                        
+                        // Business settings
+                        chatElements.businessRole.value = settings.businessRole || 'general';
+                        chatElements.leadQualification.value = settings.leadQualification || 'none';
+                        chatElements.companyName.value = settings.companyName || '';
+                        chatElements.followupStrategy.value = settings.followupStrategy || 'none';
+                        
+                        // New Product Details
+                        if (settings.productDetails) {
+                            chatElements.productName.value = settings.productDetails.name || '';
+                            chatElements.productDescription.value = settings.productDetails.description || '';
+                            chatElements.productPrice.value = settings.productDetails.price || '';
+                            chatElements.productFeatures.value = (settings.productDetails.features || []).join(', ');
+                            chatElements.productBenefits.value = (settings.productDetails.benefits || []).join(', ');
+                            chatElements.productAvailability.value = settings.productDetails.availability || 'in stock';
+                            chatElements.productDeliveryInfo.value = settings.productDetails.deliveryInfo || '';
+                            chatElements.productWarranty.value = settings.productDetails.warranty || '';
+                            chatElements.productReturnPolicy.value = settings.productDetails.returnPolicy || '';
+                        }
+                        
+                        // Conversation rules
+                        if (settings.conversationRules) {
+                            chatElements.conversationRules.value = settings.conversationRules.join('\n');
+                        }
+                        
+                        // Custom prompts
+                        if (settings.customPrompts) {
+                            chatElements.customPromptIntro.value = settings.customPrompts.introduction || '';
+                            chatElements.customPromptPresentation.value = settings.customPrompts.productPresentation || '';
+                            chatElements.customPromptObjections.value = settings.customPrompts.objectionHandling || '';
+                            chatElements.customPromptClosing.value = settings.customPrompts.closing || '';
+                        }
+                        
+                        // Custom template
+                        chatElements.customPrompt.value = settings.customPrompt || '';
+                        
+                        // Advanced settings
+                        chatElements.alwaysReplyInActiveChats.checked = settings.alwaysReplyInActiveChats !== false;
+                        chatElements.maxConsecutiveResponses.value = settings.maxConsecutiveResponses || 10;
+                        chatElements.conversationMemory.value = settings.conversationMemory || 20;
+                        chatElements.minResponseInterval.value = settings.minResponseInterval || 0.5;
+                    } else {
+                        console.error('Failed to load agent settings:', response.message);
+                    }
+                } catch (error) {
+                    console.error('Error loading agent settings:', error);
+                }
+            };
+            
+            // Save agent settings
+            const saveAgentSettings = async () => {
+                try {
+                    // Validate settings
+                    const ageMin = parseInt(chatElements.ageMin.value);
+                    const ageMax = parseInt(chatElements.ageMax.value);
+                    if (ageMin >= ageMax) {
+                        alert('Minimum age must be less than maximum age');
+                        return;
+                    }
+                    
+                    const delayMin = parseInt(chatElements.delayMin.value);
+                    const delayMax = parseInt(chatElements.delayMax.value);
+                    if (delayMin >= delayMax) {
+                        alert('Minimum delay must be less than maximum delay');
+                        return;
+                    }
+                    
+                    const workStart = parseInt(chatElements.workStart.value);
+                    const workEnd = parseInt(chatElements.workEnd.value);
+                    if (workStart >= workEnd) {
+                        alert('Working hours start must be less than end');
+                        return;
+                    }
+                    
+                    const settings = {
+                        personality: chatElements.agentPersonality.value,
+                        gender: chatElements.agentGender.value,
+                        ageRange: {
+                            min: ageMin,
+                            max: ageMax
+                        },
+                        responseDelay: {
+                            min: delayMin,
+                            max: delayMax
+                        },
+                        maxResponseLength: parseInt(chatElements.responseLength.value),
+                        greeting: chatElements.greeting.value,
+                        workingHours: {
+                            start: workStart,
+                            end: workEnd
+                        },
+                        responseRate: parseInt(chatElements.responseRate.value),
+                        mode: chatElements.agentMode.value,
+                        autoRespond: {
+                            knownUsers: chatElements.respondKnown.checked,
+                            unknownUsers: chatElements.respondUnknown.checked,
+                            groups: chatElements.respondGroups.checked
+                        },
+                        blacklistedWords: chatElements.blacklistWords.value.split(',').map(w => w.trim()),
+                        
+                        // Business settings
+                        businessRole: chatElements.businessRole.value,
+                        leadQualification: chatElements.leadQualification.value,
+                        companyName: chatElements.companyName.value,
+                        followupStrategy: chatElements.followupStrategy.value,
+                        
+                        // Product details
+                        productDetails: {
+                            name: chatElements.productName.value,
+                            description: chatElements.productDescription.value,
+                            price: chatElements.productPrice.value,
+                            features: chatElements.productFeatures.value.split(',').map(f => f.trim()).filter(f => f),
+                            benefits: chatElements.productBenefits.value.split(',').map(b => b.trim()).filter(b => b),
+                            availability: chatElements.productAvailability.value,
+                            deliveryInfo: chatElements.productDeliveryInfo.value,
+                            warranty: chatElements.productWarranty.value,
+                            returnPolicy: chatElements.productReturnPolicy.value
+                        },
+                        
+                        // Conversation settings
+                        conversationRules: chatElements.conversationRules.value
+                            .split('\n')
+                            .map(rule => rule.trim())
+                            .filter(rule => rule),
+                            
+                        customPrompts: {
+                            introduction: chatElements.customPromptIntro.value,
+                            productPresentation: chatElements.customPromptPresentation.value,
+                            objectionHandling: chatElements.customPromptObjections.value,
+                            closing: chatElements.customPromptClosing.value
+                        },
+                        
+                        // Custom template
+                        customPrompt: chatElements.customPrompt.value,
+                        
+                        // Advanced settings
+                        alwaysReplyInActiveChats: chatElements.alwaysReplyInActiveChats.checked,
+                        maxConsecutiveResponses: parseInt(chatElements.maxConsecutiveResponses.value),
+                        conversationMemory: parseInt(chatElements.conversationMemory.value),
+                        minResponseInterval: parseFloat(chatElements.minResponseInterval.value)
+                    };
+                    
+                    // Save settings
+                    const response = await window.electronAPI.updateAgentSettings({
+                        token: state.token,
+                        settings
+                    });
+                    
+                    if (response.success) {
+                        alert('Settings saved successfully');
+                        closeAgentConfigModal();
+                    } else {
+                        alert(`Failed to save settings: ${response.message}`);
+                    }
+                } catch (error) {
+                    console.error('Error saving agent settings:', error);
+                    alert('Error saving settings. Please try again.');
+                }
+            };
+            
+            // Start agent
+            const startAgent = async () => {
+                if (!selectedChat) return;
+                
+                try {
+                    const response = await window.electronAPI.startAgent({
+                        token: state.token,
+                        chatId: selectedChat.id
+                    });
+                    
+                    if (response.success) {
+                        chatElements.startAgentBtn.style.display = 'none';
+                        chatElements.stopAgentBtn.style.display = 'block';
+                        
+                        // Update chat item to show agent is active
+                        const chatItem = Array.from(chatElements.chatList.children)
+                            .find(el => el.querySelector('.chat-item-name').textContent.includes(selectedChat.name));
+                        if (chatItem) {
+                            chatItem.classList.add('agent-active');
+                        }
+                    } else {
+                        alert(`Failed to start agent: ${response.message}`);
+                    }
+                } catch (error) {
+                    console.error('Error starting agent:', error);
+                    alert('Error starting agent. Please try again.');
+                }
+            };
+            
+            // Stop agent
+            const stopAgent = async () => {
+                if (!selectedChat) return;
+                
+                try {
+                    const response = await window.electronAPI.stopAgent({
+                        token: state.token,
+                        chatId: selectedChat.id
+                    });
+                    
+                    if (response.success) {
+                        chatElements.startAgentBtn.style.display = 'block';
+                        chatElements.stopAgentBtn.style.display = 'none';
+                        
+                        // Update chat item to show agent is inactive
+                        const chatItem = Array.from(chatElements.chatList.children)
+                            .find(el => el.querySelector('.chat-item-name').textContent.includes(selectedChat.name));
+                        if (chatItem) {
+                            chatItem.classList.remove('agent-active');
+                        }
+                    } else {
+                        alert(`Failed to stop agent: ${response.message}`);
+                    }
+                } catch (error) {
+                    console.error('Error stopping agent:', error);
+                    alert('Error stopping agent. Please try again.');
+                }
+            };
+            
+            // Open agent config modal
+            const openAgentConfigModal = () => {
+                loadAgentSettings();
+                chatElements.agentConfigModal.style.display = 'block';
+            };
+            
+            // Close agent config modal
+            const closeAgentConfigModal = () => {
+                chatElements.agentConfigModal.style.display = 'none';
+            };
+            
+            // Filter chat list
+            const filterChatList = () => {
+                const searchTerm = chatElements.chatSearch.value.toLowerCase();
+                const chatItems = chatElements.chatList.querySelectorAll('.chat-item');
+                
+                chatItems.forEach(item => {
+                    const name = item.querySelector('.chat-item-name').textContent.toLowerCase();
+                    if (name.includes(searchTerm)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            };
+            
+            // Handle new messages
+            window.electronAPI.onNewMessage((event, message) => {
+                // If this is from the currently selected chat, add it to the UI
+                if (selectedChat && message.from === selectedChat.id) {
+                    const msgElement = document.createElement('div');
+                    msgElement.className = 'message-bubble message-incoming';
+                    
+                    const time = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    msgElement.innerHTML = `
+                        <div class="message-content">${message.body}</div>
+                        <div class="message-time">${time}</div>
+                    `;
+                    
+                    if (chatElements.messageContainer.querySelector('.empty-state')) {
+                        chatElements.messageContainer.innerHTML = '';
+                    }
+                    
+                    chatElements.messageContainer.appendChild(msgElement);
+                    chatElements.messageContainer.scrollTop = chatElements.messageContainer.scrollHeight;
+                }
+                
+                // Refresh chat list to update unread counts
+                loadChats();
+            });
+            
+            // Handle agent responses
+            window.electronAPI.onAgentResponse((event, data) => {
+                // If this is from the currently selected chat, add it to the UI
+                if (selectedChat && data.chatId === selectedChat.id) {
+                    const msgElement = document.createElement('div');
+                    msgElement.className = 'message-bubble message-outgoing';
+                    
+                    const time = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    msgElement.innerHTML = `
+                        <div class="message-content">${data.message}</div>
+                        <div class="message-time">${time} 🤖</div>
+                    `;
+                    
+                    if (chatElements.messageContainer.querySelector('.empty-state')) {
+                        chatElements.messageContainer.innerHTML = '';
+                    }
+                    
+                    chatElements.messageContainer.appendChild(msgElement);
+                    chatElements.messageContainer.scrollTop = chatElements.messageContainer.scrollHeight;
+                }
+            });
+            
+            // Handle agent status changes
+            window.electronAPI.onAgentStatusChange((event, status) => {
+                currentAgentStatus = status;
+                
+                // Update UI for current chat if needed
+                if (selectedChat) {
+                    const isActive = status.activeChats.includes(selectedChat.id);
+                    chatElements.startAgentBtn.style.display = isActive ? 'none' : 'block';
+                    chatElements.stopAgentBtn.style.display = isActive ? 'block' : 'none';
+                }
+                
+                // Update chat list to show which chats have active agents
+                loadChats();
+            });
+            
+            // Event Listeners for Chat UI
+            document.querySelector('.tab-btn[data-tab="chat"]').addEventListener('click', () => {
+                if (state.isAuthenticated) {
+                    // Set up message listeners when entering the chat tab
+                    setupChatListeners();
+                    // Load the initial chats and settings
+                    loadChats();
+                    loadAgentSettings();
+                }
+            });
+            
+            chatElements.sendChatBtn.addEventListener('click', sendChatMessage);
+            chatElements.chatMessage.addEventListener('keypress', e => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendChatMessage();
+                }
+            });
+            
+            chatElements.startAgentBtn.addEventListener('click', startAgent);
+            chatElements.stopAgentBtn.addEventListener('click', stopAgent);
+            chatElements.configureAgentBtn.addEventListener('click', openAgentConfigModal);
+            chatElements.modalClose.addEventListener('click', closeAgentConfigModal);
+            chatElements.saveAgentConfig.addEventListener('click', saveAgentSettings);
+            chatElements.chatSearch.addEventListener('input', filterChatList);
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', e => {
+                if (e.target === chatElements.agentConfigModal) {
+                    closeAgentConfigModal();
+                }
+            });
+            
+            // Remove event listeners when switching tabs
+            document.querySelectorAll('.tab-btn').forEach(tab => {
+                if (tab.dataset.tab !== 'chat') {
+                    tab.addEventListener('click', () => {
+                        window.electronAPI.removeNewMessageListener();
+                        window.electronAPI.removeAgentResponseListener();
+                        window.electronAPI.removeAgentStatusChangeListener();
+                    });
+                }
+            });
+
+            // Handle message_ack events from the backend
+            window.electronAPI.onMessageAck = (callback) => {
+                ipcRenderer.on('message-ack-update', (event, data) => callback(event, data));
+            };
+
+            window.electronAPI.onMessageAck((event, { messageId, ackLevel }) => {
+                const msgElement = document.querySelector(`.message-bubble[data-message-id="${messageId}"]`);
+                if (msgElement) {
+                    const statusElement = msgElement.querySelector('.message-read-status');
+                    if (statusElement) {
+                        statusElement.className = 'message-read-status';
+                        if (ackLevel === 3) {
+                            statusElement.classList.add('read');
+                            statusElement.innerHTML = '✓✓';
+                        } else if (ackLevel === 2) {
+                            statusElement.classList.add('delivered');
+                            statusElement.innerHTML = '✓✓';
+                        } else {
+                            statusElement.classList.add('sent');
+                            statusElement.innerHTML = '✓';
+                        }
+                    }
+                }
+            });
+        });
+
+        // Add a function to set up chat listeners
+        const setupChatListeners = () => {
+            // Clean up old listeners first
+            window.electronAPI.removeNewMessageListener();
+            window.electronAPI.removeAgentResponseListener();
+            window.electronAPI.removeAgentStatusChangeListener();
+            
+            // Set up new message listener
+            window.electronAPI.onNewMessage((event, message) => {
+                console.log('New message received:', message);
+                
+                // Update the chat list to show unread messages
+                loadChats();
+                
+                // If this is from the currently selected chat, add it to the UI
+                if (selectedChat && message.from === selectedChat.id) {
+                    // Create the message element
+                    const msgElement = document.createElement('div');
+                    msgElement.className = 'message-bubble message-incoming';
+                    
+                    const time = new Date(message.timestamp).toLocaleTimeString([], { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                    
+                    msgElement.innerHTML = `
+                        <div class="message-content">${message.body}</div>
+                        <div class="message-time">${time}</div>
+                    `;
+                    
+                    // Clear empty state if present
+                    if (chatElements.messageContainer.querySelector('.empty-state')) {
+                        chatElements.messageContainer.innerHTML = '';
+                    }
+                    
+                    // Add to the container and scroll
+                    chatElements.messageContainer.appendChild(msgElement);
+                    chatElements.messageContainer.scrollTop = chatElements.messageContainer.scrollHeight;
+                }
+            });
+            
+            // Set up agent response listener
+            window.electronAPI.onAgentResponse((event, data) => {
+                console.log('Agent response received:', data);
+                
+                // If this is from the currently selected chat, add it to the UI
+                if (selectedChat && data.chatId === selectedChat.id) {
+                    // Create the message element
+                    const msgElement = document.createElement('div');
+                    msgElement.className = 'message-bubble message-outgoing';
+                    
+                    const time = new Date(data.timestamp).toLocaleTimeString([], { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                    
+                    msgElement.innerHTML = `
+                        <div class="message-content">${data.message}</div>
+                        <div class="message-time">${time} 🤖</div>
+                    `;
+                    
+                    // Clear empty state if present
+                    if (chatElements.messageContainer.querySelector('.empty-state')) {
+                        chatElements.messageContainer.innerHTML = '';
+                    }
+                    
+                    // Add to the container and scroll
+                    chatElements.messageContainer.appendChild(msgElement);
+                    chatElements.messageContainer.scrollTop = chatElements.messageContainer.scrollHeight;
+                }
+                
+                // Update the chat list
+                loadChats();
+            });
+            
+            // Set up agent status change listener
+            window.electronAPI.onAgentStatusChange((event, status) => {
+                console.log('Agent status changed:', status);
+                
+                // Update current agent status
+                currentAgentStatus = status;
+                
+                // Update UI for current chat if needed
+                if (selectedChat) {
+                    const isActive = status.activeChats.includes(selectedChat.id);
+                    chatElements.startAgentBtn.style.display = isActive ? 'none' : 'block';
+                    chatElements.stopAgentBtn.style.display = isActive ? 'block' : 'none';
+                }
+                
+                // Update chat list to show which chats have active agents
+                loadChats();
+            });
+        };
+
+        // Add tab switching functionality
+        document.querySelectorAll('.config-tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // Hide all tab contents
+                document.querySelectorAll('.config-tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Deactivate all tab buttons
+                document.querySelectorAll('.config-tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Activate the clicked tab button
+                button.classList.add('active');
+                
+                // Show the corresponding tab content
+                const tabId = button.getAttribute('data-tab') + '-tab';
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

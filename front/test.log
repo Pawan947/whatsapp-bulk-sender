@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="side-panel">
+        <h2>Sending Log</h2>
+        <div id="sendLog">
+            <div class="log-entry">123456789012: Sent (1/10)</div>
+            <div class="log-entry">123456789013: Sent (2/10)</div>
+            <div class="log-entry error">123456789014: Failed (3/10)</div>
+        </div>
+       
+
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>WhatsApp Manager</h1>
+            <h6>by inst:pawan_.387</h6>
+        </div>
+        
+        <div id="auth" class="tab-content active">
+            <div class="form-group">
+                <input type="number" placeholder="Enter number of days you need access" min="1">
+                <button>Register Device</button>
+                <input type="text" placeholder="Enter OTP">
+                <button>Verify OTP</button>
+                <p>Authentication status will appear here</p>
+            </div>
+        </div>
+        <div id="qr" class="tab-content">
+            <div id="qrDisplay">
+                <div id="qrCanvas">
+                    <img src="https://via.placeholder.com/200" alt="QR Code">
+                </div>
+                <p id="qrStatus">Scan QR Code to Connect</p>
+            </div>
+        </div>
+        <div id="messages" class="tab-content">
+            <div class="messages">
+                <div class="message">
+                    <strong>From:</strong> 123456789012<br>
+                    <strong>Message:</strong> Hello, this is a test message<br>
+                    <strong>Time:</strong> 2025-03-23 10:00
+                </div>
+                <div class="message">
+                    <strong>From:</strong> 123456789013<br>
+                    <strong>Message:</strong> Hi there!<br>
+                    <strong>Time:</strong> 2025-03-23 10:05
+                </div>
+            </div>
+        </div>
+        <div id="send" class="tab-content">
+            <div class="form-group">
+                <input type="text" placeholder="Phone Number (e.g., 123456789012)">
+                <textarea placeholder="Enter your message"></textarea>
+                <input type="file">
+                <button>Send Message</button>
+            </div>
+        </div>
+        <div id="bulk" class="tab-content">
+            <div class="form-group">
+                <textarea placeholder="Numbers (one per line, e.g., 123456789012)"></textarea>
+                <select>
+                    <option>Prompt 1</option>
+                    <option>Prompt 2</option>
+                </select>
+                <textarea placeholder="Enter your message (use {var1,var2} for variations)"></textarea>
+                <select>
+                    <option value="text">Text Message</option>
+                    <option value="poll">Poll</option>
+                </select>
+                <textarea placeholder="Poll options (one per line)" style="display: none;"></textarea>
+                <input type="file">
+                <label><input type="checkbox"> Resume from last pause</label>
+                <button>Start Bulk Send</button>
+                <button style="display: none;">Pause Sending</button>
+                <button>Generate Dull Text</button>
+                <div class="progress-bar"><div class="progress-fill" style="width: 50%;"></div></div>
+            </div>
+        </div>
+        <div id="polls" class="tab-content">
+            <div class="message">
+                <strong>Question:</strong> Do you like this app?<br>
+                <strong>Options:</strong> Yes, No<br>
+                <strong>Votes:</strong> {"Yes": 5, "No": 2}
+            </div>
+        </div>
+        <div id="gemini" class="tab-content">
+            <div class="form-group">
+                <h3>Generate Marketing Post</h3>
+                <input type="text" placeholder="Company Name (e.g., UrbanFit Apparel)">
+                <input type="text" placeholder="Product Details (e.g., Premium skirts)">
+                <select>
+                    <option value="female">Female</option>
+                    <option value="male">Male</option>
+                    <option value="unisex">Unisex</option>
+                </select>
+                <input type="text" placeholder="Target Audience (e.g., Active women aged 18-35)">
+                <input type="text" placeholder="Tone (e.g., empowering)">
+                <input type="text" placeholder="Key Selling Points (e.g., 4-way stretch, sweat-wicking)">
+                <input type="text" placeholder="Call to Action (e.g., Get 25% OFF)">
+                <input type="text" placeholder="Current Promotion (e.g., New Collection Launch)">
+                <button>Generate Marketing Post</button>
+                <textarea placeholder="Generated post and validation report will appear here"></textarea>
+                <button>Save Prompt</button>
+                <select>
+                    <option>Prompt 1</option>
+                    <option>Prompt 2</option>
+                </select>
+                <button>Generate Response</button>
+            </div>
+        </div>
+        <div id="settings" class="tab-content">
+            <div class="form-group">
+                <h3>Bulk Send Settings</h3>
+                <label>Daily Message Limit:</label><input type="number" value="500" min="1">
+                <label>Batch Size (50-100):</label><input type="number" value="50" min="50" max="100">
+                <label>Batch Gap (hours):</label><input type="number" value="1" min="1" max="2" step="0.5">
+                <label>Min Message Delay (seconds):</label><input type="number" value="30" min="30" max="120">
+                <label>Max Message Delay (seconds):</label><input type="number" value="120" min="30" max="120">
+                <label>Non-Peak Start (hour, 0-23):</label><input type="number" value="2" min="0" max="23">
+                <label>Non-Peak End (hour, 0-23):</label><input type="number" value="5" min="0" max="23">
+                <button>Save Settings</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+2025/09/02-14:38:09.042 8dd0 Reusing MANIFEST C:\Users\yadav\Downloads\whatsapp agent\whatsapp-auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/09/02-14:38:09.044 8dd0 Recovering log #1280
+2025/09/02-14:38:09.092 8dd0 Reusing old log C:\Users\yadav\Downloads\whatsapp agent\whatsapp-auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/001280.log 
+2025/09/02-14:38:09.093 8dd0 Delete type=2 #1273
+2025/09/02-14:38:09.093 8dd0 Delete type=2 #1274
+2025/09/02-14:38:09.093 8dd0 Delete type=2 #1275
+2025/09/02-14:38:09.094 8dd0 Delete type=2 #1276
+2025/09/02-14:38:09.094 8dd0 Delete type=2 #1277
+2025/09/02-14:38:09.094 8dd0 Delete type=2 #1278
+2025/09/02-14:38:09.094 8dd0 Delete type=2 #1281
+2025/09/02-14:38:10.817 8004 Level-0 table #1290: started
+2025/09/02-14:38:10.843 8004 Level-0 table #1290: 575520 bytes OK
+2025/09/02-14:38:10.845 8004 Delete type=0 #1280
+2025/09/02-14:38:10.846 8004 Manual compaction at level-0 from ' A\x01\x00\x00\x00' @ 72057594037927935 : 1 .. ' B\x01\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/09/02-14:38:13.188 8dd0 Compacting 1@1 + 6@2 files
+2025/09/02-14:38:13.348 8dd0 Generated table #1291@1: 57284 keys, 2215323 bytes
+2025/09/02-14:38:13.498 8dd0 Generated table #1292@1: 54077 keys, 2215625 bytes
+2025/09/02-14:38:13.569 8dd0 Generated table #1293@1: 21322 keys, 2174939 bytes
+2025/09/02-14:38:13.652 8dd0 Generated table #1294@1: 20278 keys, 2195543 bytes
+2025/09/02-14:38:13.745 8dd0 Generated table #1295@1: 39488 keys, 2189916 bytes
+2025/09/02-14:38:13.847 8dd0 Generated table #1296@1: 67535 keys, 1463976 bytes
+2025/09/02-14:38:13.848 8dd0 Compacted 1@1 + 6@2 files => 12455322 bytes
+2025/09/02-14:38:13.849 8dd0 compacted to: files[ 0 0 6 0 0 0 0 ]
+2025/09/02-14:38:13.850 8dd0 Delete type=2 #1282
+2025/09/02-14:38:13.850 8dd0 Delete type=2 #1283
+2025/09/02-14:38:13.850 8dd0 Delete type=2 #1284
+2025/09/02-14:38:13.850 8dd0 Delete type=2 #1285
+2025/09/02-14:38:13.850 8dd0 Delete type=2 #1286
+2025/09/02-14:38:13.850 8dd0 Delete type=2 #1287
+2025/09/02-14:38:13.850 8dd0 Delete type=2 #1290
