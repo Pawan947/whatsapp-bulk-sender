@@ -192,10 +192,10 @@ function updateEnvFile(mac, key, value) {
 
 loadUsers();
 
-const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || 'https://discord.com/api/webhooks/1349991240481116180/ThEnDPVlnJvv5N36sF9DMT2Cl37NxyDFRLGuHs337XPIRILCH5m9_hRUmhQLOXU4nwkI';
-const TIMEZONEDB_API_KEY = process.env.TIMEZONEDB_API_KEY || 'HFEF9KI8OM97';
-const IPGEOLOCATION_API_KEY = process.env.IPGEOLOCATION_API_KEY || '2732312e0a95464295d01a9c507bad04';
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || 'AIzaSyBdp-OU4LeiiFUu7uouWVhdhuBm_-9hXug';
+const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || '';
+const TIMEZONEDB_API_KEY = process.env.TIMEZONEDB_API_KEY || '';
+const IPGEOLOCATION_API_KEY = process.env.IPGEOLOCATION_API_KEY || '';
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || '';
 
 const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
