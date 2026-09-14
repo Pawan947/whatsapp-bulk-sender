@@ -1,1 +1,9 @@
 node_modules/
+.env
+.env.*
+!.env.example
+!.env.local.example
+.wwebjs_cache/
+*.cache
+.DS_Store
+Thumbs.db
